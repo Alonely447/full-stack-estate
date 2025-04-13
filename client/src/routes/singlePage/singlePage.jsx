@@ -11,9 +11,13 @@ function SinglePage() {
   const post = useLoaderData();
   const [saved, setSaved] = useState(post.isSaved);
   const { currentUser } = useContext(AuthContext);
+  console.log("in single page",post);
+  console.log(post.userId);
+  console.log(post.latitude);
+  console.log(post.longitude);
   const navigate = useNavigate();
 
-  const handleSave = async () => {
+ /* const handleSave = async () => {
     if (!currentUser) {
       navigate("/login");
     }
@@ -25,7 +29,35 @@ function SinglePage() {
       console.log(err);
       setSaved((prev) => !prev);
     }
-  };
+  };*/
+
+  const handleSave= async ()=>{
+    setSaved((prev)=> !prev);
+    if(!currentuser){
+      redirect("/login")
+    }
+      try {
+        await apiRequest.post("/users/save",{postId : post.id})
+      } catch (error) {
+        console.log(error);
+        setSaved((prev)=> !prev)
+      }
+   }
+  
+  
+   const handelSendMessage =async ()=>{
+        try {
+          await apiRequest.post("/chats",{receiverId : post.userId})
+           navigate("/profile")
+        } catch (error) {
+          console.log(error);
+        }
+   }
+  
+  /*const handleShowDirection = ()=>{
+    const url = `https://www.google.com/maps?q=${post.latitude},${post.longitude}`;
+    window.open(url, '_blank');    
+  }*/
 
   return (
     <div className="singlePage">
@@ -139,10 +171,11 @@ function SinglePage() {
             <Map items={[post]} />
           </div>
           <div className="buttons">
-            <button>
+            <button onClick={handelSendMessage}>
               <img src="/chat.png" alt="" />
               Send a Message
             </button>
+            {/*<button onClick={handleShowDirection}> Show Direction</button>*/}
             <button
               onClick={handleSave}
               style={{

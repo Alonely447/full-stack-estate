@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState} from "react";
 import "./newPostPage.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -10,15 +10,48 @@ function NewPostPage() {
   const [value, setValue] = useState("");
   const [images, setImages] = useState([]);
   const [error, setError] = useState("");
-
+  const [lat, setLat] = useState("");
+  const [lon, setLon] = useState("");
+  
   const navigate = useNavigate()
+
+  const fetchCoordinates = async (address, city) => {
+    try {
+      const fullAddress = `${address}, ${city}`;
+      const geocodeResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
+      );
+      const geocodeData = await geocodeResponse.json();
+      if (geocodeData.length === 0) {
+        throw new Error("Unable to find location");
+      }
+      const { lat, lon } = geocodeData[0];
+      setLat(lat);
+      setLon(lon);
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+      setError("Unable to fetch coordinates. Please check the address.");
+    }
+  };
+
+  const handleAddressChange = (e) => {
+    const form = e.target.form;
+    const address = form.address.value;
+    const city = form.city.value; 
+    if (address && city) {
+      fetchCoordinates(address, city);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const inputs = Object.fromEntries(formData);
 
+    
+
     try {
+      
       const res = await apiRequest.post("/posts", {
         postData: {
           title: inputs.title,
@@ -29,8 +62,8 @@ function NewPostPage() {
           bathroom: parseInt(inputs.bathroom),
           type: inputs.type,
           property: inputs.property,
-          latitude: inputs.latitude,
-          longitude: inputs.longitude,
+          latitude: String(lat),
+          longitude: String(lon) ,
           images: images,
         },
         postDetail: {
@@ -47,7 +80,7 @@ function NewPostPage() {
       navigate("/"+res.data.id)
     } catch (err) {
       console.log(err);
-      setError(error);
+      setError("Failed to create post. Please try again.");
     }
   };
 
@@ -67,7 +100,7 @@ function NewPostPage() {
             </div>
             <div className="item">
               <label htmlFor="address">Address</label>
-              <input id="address" name="address" type="text" />
+              <input id="address" name="address" type="text" onChange={handleAddressChange}/>
             </div>
             <div className="item description">
               <label htmlFor="desc">Description</label>
@@ -75,7 +108,7 @@ function NewPostPage() {
             </div>
             <div className="item">
               <label htmlFor="city">City</label>
-              <input id="city" name="city" type="text" />
+              <input id="city" name="city" type="text" onChange={handleAddressChange}/>
             </div>
             <div className="item">
               <label htmlFor="bedroom">Bedroom Number</label>
@@ -87,11 +120,11 @@ function NewPostPage() {
             </div>
             <div className="item">
               <label htmlFor="latitude">Latitude</label>
-              <input id="latitude" name="latitude" type="text" />
+              <input id="latitude" name="latitude" type="text" value={lat} />
             </div>
             <div className="item">
               <label htmlFor="longitude">Longitude</label>
-              <input id="longitude" name="longitude" type="text" />
+              <input id="longitude" name="longitude" type="text" value={lon} />
             </div>
             <div className="item">
               <label htmlFor="type">Type</label>
@@ -107,8 +140,8 @@ function NewPostPage() {
               <select name="property">
                 <option value="apartment">Apartment</option>
                 <option value="house">House</option>
-                <option value="condo">Condo</option>
-                <option value="land">Land</option>
+                {/*<option value="condo">Condo</option>
+                <option value="land">Land</option>*/}
               </select>
             </div>
 
@@ -153,7 +186,7 @@ function NewPostPage() {
               <input min={0} id="restaurant" name="restaurant" type="number" />
             </div>
             <button className="sendButton">Add</button>
-            {error && <span>error</span>}
+            {error && <span>{error}</span>}
           </form>
         </div>
       </div>
@@ -174,5 +207,5 @@ function NewPostPage() {
     </div>
   );
 }
-
+//console.log("Latitude", lat, "Longtitude", lon);
 export default NewPostPage;
