@@ -33,7 +33,7 @@ function SinglePage() {
 
   const handleSave= async ()=>{
     setSaved((prev)=> !prev);
-    if(!currentuser){
+    if(!currentUser){
       redirect("/login")
     }
       try {

@@ -43,36 +43,36 @@ export const getPost = async (req, res) => {
       },
     });
 
-    let userId;
+    let userId = null;
 
     const token = req.cookies?.token;
 
-    if(!token){
-      userId = null;
-  }else{
-      jwt.verify(token,process.env.JWT_SECRET_KEY,async(err,payload)=>{
-          if(err){
-              userId = null;
-          }else{
-              userId = payload.id;
-          }
-      })
-  }
-
-  const saved = await prisma.savedPost.findUnique({
-      where:{
-          userId_postId:{
-              postId:id,
-              userId,
-          }
+    if (token) {
+      try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        userId = payload.id;
+      } catch (err) {
+        console.log("Invalid token:", err);
       }
-  })
+    }
 
+    // Check if the post is saved by the user
+    const saved = userId
+      ? await prisma.savedPost.findUnique({
+          where: {
+            userId_postId: {
+              postId: id,
+              userId,
+            },
+          },
+        })
+      : null;
 
-    res.status(200).json({...post,isSaved :saved ? true :false })
+    // Return the post details with the `isSaved` flag
+    res.status(200).json({ ...post, isSaved: saved ? true : false });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({message:"Failed to get one posts"})
+    console.error(error);
+    res.status(500).json({ message: "Failed to get post details" });
   }
 };
 

@@ -9,6 +9,8 @@ import Register from "./routes/register/register";
 import ProfileUpdatePage from "./routes/profileUpdatePage/profileUpdatePage";
 import NewPostPage from "./routes/newPostPage/newPostPage";
 import { listPageLoader, profilePageLoader, singlePageLoader } from "./lib/loaders";
+import RequestVerification from "./routes/register/requestVerification";
+import VerifyEmail from "./routes/verifyEmail/verifyEmail";
 
 function App() {
   const router = createBrowserRouter([
@@ -58,6 +60,8 @@ function App() {
           path: "/add",
           element: <NewPostPage />,
         },
+        { path: "/request-verification", element: <RequestVerification /> },
+        { path: "/verify-email", element: <VerifyEmail /> },
       ],
     },
   ]);

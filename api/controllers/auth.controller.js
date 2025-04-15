@@ -1,8 +1,74 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
+import { sendVerificationEmail } from "../lib/email.js";
 
-export const register = async (req, res) => {
+export const requestEmailVerification = async (req, res) => {
+  const { email, username, password } = req.body;
+
+  try {
+    // Check if the email or username is already registered
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ email }, { username }],
+      },
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ message: "Email or username is already registered!" });
+    }
+
+    // Generate a verification token
+    const token = jwt.sign(
+      { email, username, password },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1d" } // Token expires in 1 day
+    );
+    console.log("Token generated:", token);
+    // Send the verification email
+    await sendVerificationEmail(email, token);
+
+    res.status(200).json({ message: "Verification email sent. Please check your inbox.", token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to send verification email!" });
+  }
+};
+
+export const verifyEmailAndRegister = async (req, res) => {
+  const  token  = req.query.token;
+  console.log("Token from query:", token); // Debugging line
+
+  if (!token) {
+    return res.status(400).json({ message: "Token is missing!" });
+  }
+
+  try {
+    //console.log("Token received:", token);
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+    const { email, username, password } = decoded;
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the user
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+      },
+    });
+
+    res.status(201).json({ message: "Account created successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Invalid or expired token!" });
+  }
+};
+/*export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
@@ -28,7 +94,7 @@ export const register = async (req, res) => {
     console.log(err);
     res.status(500).json({ message: "Failed to create user!" });
   }
-};
+};*/
 
 export const login = async (req, res) => {
   const { username, password } = req.body;
