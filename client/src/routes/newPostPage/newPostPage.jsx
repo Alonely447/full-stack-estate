@@ -30,7 +30,7 @@ function NewPostPage() {
       setLon(lon);
     } catch (error) {
       console.error("Error fetching coordinates:", error);
-      setError("Unable to fetch coordinates. Please check the address.");
+      setError(" ");
     }
   };
 
@@ -87,47 +87,47 @@ function NewPostPage() {
   return (
     <div className="newPostPage">
       <div className="formContainer">
-        <h1>Add New Post</h1>
+        <h1>Tạo bài mới</h1>
         <div className="wrapper">
           <form onSubmit={handleSubmit}>
             <div className="item">
-              <label htmlFor="title">Title</label>
+              <label htmlFor="title">Tiêu đề</label>
               <input id="title" name="title" type="text" />
             </div>
             <div className="item">
-              <label htmlFor="price">Price</label>
+              <label htmlFor="price">Giá tiền</label>
               <input id="price" name="price" type="number" />
             </div>
             <div className="item">
-              <label htmlFor="address">Address</label>
+              <label htmlFor="address">Địa chỉ</label>
               <input id="address" name="address" type="text" onChange={handleAddressChange}/>
             </div>
             <div className="item description">
-              <label htmlFor="desc">Description</label>
+              <label htmlFor="desc">Mô tả</label>
               <ReactQuill theme="snow" onChange={setValue} value={value} />
             </div>
             <div className="item">
-              <label htmlFor="city">City</label>
+              <label htmlFor="city">Thành phố</label>
               <input id="city" name="city" type="text" onChange={handleAddressChange}/>
             </div>
             <div className="item">
-              <label htmlFor="bedroom">Bedroom Number</label>
+              <label htmlFor="bedroom">Số phòng ngủ</label>
               <input min={1} id="bedroom" name="bedroom" type="number" />
             </div>
             <div className="item">
-              <label htmlFor="bathroom">Bathroom Number</label>
+              <label htmlFor="bathroom">Số nhà tắm</label>
               <input min={1} id="bathroom" name="bathroom" type="number" />
             </div>
             <div className="item">
-              <label htmlFor="latitude">Latitude</label>
-              <input id="latitude" name="latitude" type="text" value={lat} />
+              <label htmlFor="latitude">Vĩ độ</label>
+              <input id="latitude" name="latitude" type="text" value={lat} readOnly/>
             </div>
             <div className="item">
-              <label htmlFor="longitude">Longitude</label>
-              <input id="longitude" name="longitude" type="text" value={lon} />
+              <label htmlFor="longitude">Kinh độ</label>
+              <input id="longitude" name="longitude" type="text" value={lon} readOnly/>
             </div>
             <div className="item">
-              <label htmlFor="type">Type</label>
+              <label htmlFor="type">Loại hình</label>
               <select name="type">
                 <option value="rent" defaultChecked>
                   Rent
@@ -136,32 +136,32 @@ function NewPostPage() {
               </select>
             </div>
             <div className="item">
-              <label htmlFor="type">Property</label>
+              <label htmlFor="type">Kiểu nhà</label>
               <select name="property">
-                <option value="apartment">Apartment</option>
-                <option value="house">House</option>
+                <option value="apartment">Căn hộ</option>
+                <option value="house">Nhà đất</option>
                 {/*<option value="condo">Condo</option>
                 <option value="land">Land</option>*/}
               </select>
             </div>
 
             <div className="item">
-              <label htmlFor="utilities">Utilities Policy</label>
+              <label htmlFor="utilities">Quản lý tiện ích</label>
               <select name="utilities">
-                <option value="owner">Owner is responsible</option>
-                <option value="tenant">Tenant is responsible</option>
-                <option value="shared">Shared</option>
+                <option value="owner">Chủ sở hữu chịu trách nhiệm</option>
+                <option value="tenant">Người thuê chịu trách nhiệm</option>
+                <option value="shared">Chia</option>
               </select>
             </div>
             <div className="item">
-              <label htmlFor="pet">Pet Policy</label>
+              <label htmlFor="pet">Thú nuôi</label>
               <select name="pet">
-                <option value="allowed">Allowed</option>
-                <option value="not-allowed">Not Allowed</option>
+                <option value="allowed">Cho phép</option>
+                <option value="not-allowed">Không cho phép</option>
               </select>
             </div>
             <div className="item">
-              <label htmlFor="income">Income Policy</label>
+              <label htmlFor="income">Lợi ích</label>
               <input
                 id="income"
                 name="income"
@@ -170,19 +170,19 @@ function NewPostPage() {
               />
             </div>
             <div className="item">
-              <label htmlFor="size">Total Size (sqft)</label>
+              <label htmlFor="size">Diện tích (m2)</label>
               <input min={0} id="size" name="size" type="number" />
             </div>
             <div className="item">
-              <label htmlFor="school">School</label>
+              <label htmlFor="school">Khoảng cách trường học</label>
               <input min={0} id="school" name="school" type="number" />
             </div>
             <div className="item">
-              <label htmlFor="bus">bus</label>
+              <label htmlFor="bus">Khoảng cách bến xe buýt</label>
               <input min={0} id="bus" name="bus" type="number" />
             </div>
             <div className="item">
-              <label htmlFor="restaurant">Restaurant</label>
+              <label htmlFor="restaurant">Khoảng cách nhà hàng</label>
               <input min={0} id="restaurant" name="restaurant" type="number" />
             </div>
             <button className="sendButton">Add</button>

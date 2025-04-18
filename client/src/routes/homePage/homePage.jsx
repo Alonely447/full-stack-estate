@@ -11,26 +11,25 @@ function HomePage() {
     <div className="homePage">
       <div className="textContainer">
         <div className="wrapper">
-          <h1 className="title">Find Real Estate & Get Your Dream Place</h1>
+          <h1 className="title">Tìm kiếm tổ ấm mơ ước của bạn</h1>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos
-            explicabo suscipit cum eius, iure est nulla animi consequatur
-            facilis id pariatur fugit quos laudantium temporibus dolor ea
-            repellat provident impedit!
+          Chào mừng đến với MyHome, nơi bạn không chỉ tìm thấy một ngôi nhà, 
+          mà còn tìm thấy một cộng đồng, một phong cách sống. 
+          Hãy bắt đầu hành trình khám phá không gian sống hoàn hảo của bạn ngay hôm nay!
           </p>
           <SearchBar />
           <div className="boxes">
             <div className="box">
-              <h1>16+</h1>
-              <h2>Years of Experience</h2>
+              <h1></h1>
+              <h2></h2>
             </div>
             <div className="box">
-              <h1>200</h1>
-              <h2>Award Gained</h2>
+              <h1></h1>
+              <h2></h2>
             </div>
             <div className="box">
-              <h1>2000+</h1>
-              <h2>Property Ready</h2>
+              <h1></h1>
+              <h2></h2>
             </div>
           </div>
         </div>

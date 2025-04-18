@@ -72,7 +72,7 @@ function SinglePage() {
                   <img src="/pin.png" alt="" />
                   <span>{post.address}</span>
                 </div>
-                <div className="price">$ {post.price}</div>
+                <div className="price">{post.price} đ </div>
               </div>
               <div className="user">
                 <img src={post.user.avatar} alt="" />
@@ -90,59 +90,59 @@ function SinglePage() {
       </div>
       <div className="features">
         <div className="wrapper">
-          <p className="title">General</p>
+          <p className="title">Tổng quan</p>
           <div className="listVertical">
             <div className="feature">
               <img src="/utility.png" alt="" />
               <div className="featureText">
-                <span>Utilities</span>
+                <span>Tiện ích, nội thất</span>
                 {post.postDetail.utilities === "owner" ? (
-                  <p>Owner is responsible</p>
+                  <p>Chủ nhà chịu trách nhiệm</p>
                 ) : (
-                  <p>Tenant is responsible</p>
+                  <p>Người thuê chịu trách nhiệm</p>
                 )}
               </div>
             </div>
             <div className="feature">
               <img src="/pet.png" alt="" />
               <div className="featureText">
-                <span>Pet Policy</span>
+                <span>Thú nuôi</span>
                 {post.postDetail.pet === "allowed" ? (
-                  <p>Pets Allowed</p>
+                  <p>Cho phép thú nuôi</p>
                 ) : (
-                  <p>Pets not Allowed</p>
+                  <p>Không cho phép thú nuôi</p>
                 )}
               </div>
             </div>
             <div className="feature">
               <img src="/fee.png" alt="" />
               <div className="featureText">
-                <span>Income Policy</span>
+                <span>Lợi ích</span>
                 <p>{post.postDetail.income}</p>
               </div>
             </div>
           </div>
-          <p className="title">Sizes</p>
+          <p className="title">Diện tích</p>
           <div className="sizes">
             <div className="size">
               <img src="/size.png" alt="" />
-              <span>{post.postDetail.size} sqft</span>
+              <span>{post.postDetail.size} m2</span>
             </div>
             <div className="size">
               <img src="/bed.png" alt="" />
-              <span>{post.bedroom} beds</span>
+              <span>{post.bedroom} phòng ngủ</span>
             </div>
             <div className="size">
               <img src="/bath.png" alt="" />
-              <span>{post.bathroom} bathroom</span>
+              <span>{post.bathroom} Phòng tắm</span>
             </div>
           </div>
-          <p className="title">Nearby Places</p>
+          <p className="title">Địa điểm gần đó</p>
           <div className="listHorizontal">
             <div className="feature">
               <img src="/school.png" alt="" />
               <div className="featureText">
-                <span>School</span>
+                <span>Trường học</span>
                 <p>
                   {post.postDetail.school > 999
                     ? post.postDetail.school / 1000 + "km"
@@ -154,26 +154,26 @@ function SinglePage() {
             <div className="feature">
               <img src="/pet.png" alt="" />
               <div className="featureText">
-                <span>Bus Stop</span>
+                <span>Trạm xe bus</span>
                 <p>{post.postDetail.bus}m away</p>
               </div>
             </div>
             <div className="feature">
               <img src="/fee.png" alt="" />
               <div className="featureText">
-                <span>Restaurant</span>
+                <span>Nhà hàng</span>
                 <p>{post.postDetail.restaurant}m away</p>
               </div>
             </div>
           </div>
-          <p className="title">Location</p>
+          <p className="title">Địa chỉ</p>
           <div className="mapContainer">
             <Map items={[post]} />
           </div>
           <div className="buttons">
             <button onClick={handelSendMessage}>
               <img src="/chat.png" alt="" />
-              Send a Message
+              Gửi tin nhắn
             </button>
             {/*<button onClick={handleShowDirection}> Show Direction</button>*/}
             <button
@@ -183,7 +183,7 @@ function SinglePage() {
               }}
             >
               <img src="/save.png" alt="" />
-              {saved ? "Place Saved" : "Save the Place"}
+              {saved ? "Đã lưu" : "Lưu bài viết"}
             </button>
           </div>
         </div>

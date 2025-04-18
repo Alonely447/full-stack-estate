@@ -27,9 +27,9 @@ function ProfilePage() {
       <div className="details">
         <div className="wrapper">
           <div className="title">
-            <h1>User Information</h1>
+            <h1>Thông tin người dùng</h1>
             <Link to="/profile/update">
-              <button>Update Profile</button>
+              <button>Cập nhật hồ sơ</button>
             </Link>
           </div>
           <div className="info">
@@ -46,9 +46,9 @@ function ProfilePage() {
             <button onClick={handleLogout}>Logout</button>
           </div>
           <div className="title">
-            <h1>My List</h1>
+            <h1>Danh sách bài viết</h1>
             <Link to="/add">
-              <button>Create New Post</button>
+              <button>Tạo bài viết mới</button>
             </Link>
           </div>
           <Suspense fallback={<p>Loading...</p>}>
@@ -60,7 +60,7 @@ function ProfilePage() {
             </Await>
           </Suspense>
           <div className="title">
-            <h1>Saved List</h1>
+            <h1>Danh sách lưu</h1>
           </div>
           <Suspense fallback={<p>Loading...</p>}>
             <Await

@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 const mailOptions = {
   from: "dcd120401@gmail.com",
-  to: "hewacov978@dpcos.com", // Replace with a test recipient
+  to: "alonely447@gmail.com", // Replace with a test recipient
   subject: "Test Email",
   text: "This is a test email from Nodemailer.",
 };

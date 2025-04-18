@@ -21,10 +21,10 @@ function Navbar() {
           <img src="/logo.png" alt="" />
           <span>MyHome</span>
         </a>
-        <a href="/">Home</a>
-        <a href="/">About</a>
-        <a href="/">Contact</a>
-        <a href="/">Agents</a>
+        <a href="/">Trang chủ</a>
+        <a href="/">Về chúng tôi</a>
+        <a href="/">Liên hệ</a>
+        <a href="/"></a>
       </div>
       <div className="right">
         {currentUser ? (
@@ -33,14 +33,14 @@ function Navbar() {
             <span>{currentUser.username}</span>
             <Link to="/profile" className="profile">
               {number > 0 && <div className="notification">{number}</div>}
-              <span>Profile</span>
+              <span>Hồ sơ</span>
             </Link>
           </div>
         ) : (
           <>
-            <a href="/login">Sign in</a>
+            <a href="/login">Đăng nhập</a>
             <a href="/register" className="register">
-              Sign up
+              Đăng ký
             </a>
           </>
         )}
@@ -52,12 +52,12 @@ function Navbar() {
           />
         </div>
         <div className={open ? "menu active" : "menu"}>
-          <a href="/">Home</a>
-          <a href="/">About</a>
-          <a href="/">Contact</a>
-          <a href="/">Agents</a>
-          <a href="/">Sign in</a>
-          <a href="/">Sign up</a>
+          <a href="/">Trang chủ</a>
+          <a href="/">Về chúng tôi</a>
+          <a href="/">Liên hệ</a>
+          {/*<a href="/">Agents</a>*/}
+          <a href="/">Đăng nhập</a>
+          <a href="/">Đăng ký</a>
         </div>
       </div>
     </nav>

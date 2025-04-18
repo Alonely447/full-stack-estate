@@ -9,27 +9,27 @@ function ProfileUpdatePage() {
   const { currentUser, updateUser } = useContext(AuthContext);
   const [error, setError] = useState("");
   const [avatar, setAvatar] = useState([]);
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
 
-    const { username, email, password } = Object.fromEntries(formData);
+    const { username, email, currentPassword, newPassword } = Object.fromEntries(formData);
 
     try {
       const res = await apiRequest.put(`/users/${currentUser.id}`, {
         username,
         email,
-        password,
-        avatar:avatar[0]
+        currentPassword,
+        newPassword,
+        avatar: avatar[0],
       });
       updateUser(res.data);
       navigate("/profile");
     } catch (err) {
       console.log(err);
-      setError(err.response.data.message);
+      setError(err.response?.data?.message || "Something went wrong!");
     }
   };
 
@@ -37,7 +37,7 @@ function ProfileUpdatePage() {
     <div className="profileUpdatePage">
       <div className="formContainer">
         <form onSubmit={handleSubmit}>
-          <h1>Update Profile</h1>
+          <h1>Cập nhật hồ sơ</h1>
           <div className="item">
             <label htmlFor="username">Username</label>
             <input
@@ -54,18 +54,32 @@ function ProfileUpdatePage() {
               name="email"
               type="email"
               defaultValue={currentUser.email}
+              readOnly
             />
           </div>
           <div className="item">
-            <label htmlFor="password">Password</label>
-            <input id="password" name="password" type="password" />
+            <label htmlFor="currentPassword">Current Password</label>
+            <input
+              id="currentPassword"
+              name="currentPassword"
+              type="password"
+              required
+            />
           </div>
-          <button>Update</button>
-          {error && <span>error</span>}
+          <div className="item">
+            <label htmlFor="newPassword">New Password</label>
+            <input id="newPassword" name="newPassword" type="password" />
+          </div>
+          <button>Cập nhật</button>
+          {error && <span style={{ color: "red" }}>{error}</span>}
         </form>
       </div>
       <div className="sideContainer">
-        <img src={avatar[0] || currentUser.avatar || "/noavatar.jpg"} alt="" className="avatar" />
+        <img
+          src={avatar[0] || currentUser.avatar || "/noavatar.jpg"}
+          alt=""
+          className="avatar"
+        />
         <UploadWidget
           uwConfig={{
             cloudName: "lamadev",

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
-import { sendVerificationEmail } from "../lib/email.js";
+import { sendVerificationEmail, sendResetPasswordEmail } from "../lib/email.js";
 
 export const requestEmailVerification = async (req, res) => {
   const { email, username, password } = req.body;
@@ -37,15 +37,14 @@ export const requestEmailVerification = async (req, res) => {
 
 export const verifyEmailAndRegister = async (req, res) => {
   const  token  = req.query.token;
-  console.log("Token from query:", token); // Debugging line
+ // console.log("Token from query:", token);
 
   if (!token) {
     return res.status(400).json({ message: "Token is missing!" });
   }
 
   try {
-    //console.log("Token received:", token);
-    // Verify the token
+    
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     const { email, username, password } = decoded;
@@ -65,36 +64,10 @@ export const verifyEmailAndRegister = async (req, res) => {
     res.status(201).json({ message: "Account created successfully!" });
   } catch (err) {
     console.error(err);
-    res.status(400).json({ message: "Invalid or expired token!" });
+    res.status(400).json({ message: ""});
   }
 };
-/*export const register = async (req, res) => {
-  const { username, email, password } = req.body;
 
-  try {
-    // HASH THE PASSWORD
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    console.log(hashedPassword);
-
-    // CREATE A NEW USER AND SAVE TO DB
-    const newUser = await prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    console.log(newUser);
-
-    res.status(201).json({ message: "User created successfully" });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Failed to create user!" });
-  }
-};*/
 
 export const login = async (req, res) => {
   const { username, password } = req.body;
@@ -147,4 +120,55 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   res.clearCookie("token").status(200).json({ message: "Logout Successful" });
+};
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Check if the user exists
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+
+    // Generate a reset token
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1h", // Token expires in 1 hour
+    });
+
+    // Send the reset email
+    await sendResetPasswordEmail(email, token);
+
+    res.status(200).json({ message: "Password reset link sent to your email." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to send reset email!" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    // Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the database
+    await prisma.user.update({
+      where: { id: decoded.id },
+      data: { password: hashedPassword },
+    });
+
+    res.status(200).json({ message: "Password reset successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "Invalid or expired token!" });
+  }
 };

@@ -27,18 +27,39 @@ export const getUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   const id = req.params.id;
   const tokenUserId = req.userId;
-  const { password, avatar, ...inputs } = req.body;
+  const { currentPassword, newPassword, avatar, ...inputs } = req.body;
 
+  // Check if the user is authorized to update their profile
   if (id !== tokenUserId) {
     return res.status(403).json({ message: "Not Authorized!" });
   }
 
-  let updatedPassword = null;
   try {
-    if (password) {
-      updatedPassword = await bcrypt.hash(password, 10);
+    // Find the user in the database
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
     }
 
+    // If the user wants to update their password, validate the current password
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: "Current password is required to update the password!" });
+      }
+
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect!" });
+      }
+    }
+
+    // Hash the new password if provided
+    const updatedPassword = newPassword ? await bcrypt.hash(newPassword, 10) : undefined;
+
+    // Update the user in the database
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
@@ -48,12 +69,13 @@ export const updateUser = async (req, res) => {
       },
     });
 
+    // Exclude the password from the response
     const { password: userPassword, ...rest } = updatedUser;
 
     res.status(200).json(rest);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Failed to update users!" });
+    res.status(500).json({ message: "Failed to update user!" });
   }
 };
 

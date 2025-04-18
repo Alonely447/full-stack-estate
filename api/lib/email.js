@@ -1,18 +1,18 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // Correct SMTP host for Gmail
-    port: 465, // Use port 465 for secure connections
-    secure: true, // Use true for SSL/TLS // Use your email provider (e.g., Gmail, Outlook)
+    host: "smtp.gmail.com", 
+    port: 465, 
+    secure: true, 
   auth: {
-    user: process.env.EMAIL_USER, // Your email address
-    pass: process.env.EMAIL_PASS, // Your email password or app-specific password
+    user: process.env.EMAIL_USER, 
+    pass: process.env.EMAIL_PASS, 
   },
 });
 
 export const sendVerificationEmail = async (email, token) => {
   const verificationLink = `http://localhost:5173/verify-email?token=${token}`;
-  console.log("Verification Link:", verificationLink);
+  //console.log("Verification Link:", verificationLink);
   
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -22,6 +22,24 @@ export const sendVerificationEmail = async (email, token) => {
       <h1>Email Verification</h1>
       <p>Please click the link below to verify your email and complete registration:</p>
       <a href="${verificationLink}">Verify Email</a>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+export const sendResetPasswordEmail = async (email, token) => {
+  const resetLink = `http://localhost:5173/reset-password?token=${token}`;
+  //console.log("Reset Link:", resetLink);
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Reset Your Password",
+    html: `
+      <h1>Password Reset</h1>
+      <p>Please click the link below to reset your password:</p>
+      <a href="${resetLink}">Reset Password</a>
     `,
   };
 

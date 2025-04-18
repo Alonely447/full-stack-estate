@@ -27,11 +27,11 @@ function Filter() {
   return (
     <div className="filter">
       <h1>
-        Search results for <b>{searchParams.get("city")}</b>
+        Kết quả tìm kiếm <b>{searchParams.get("city")}</b>
       </h1>
       <div className="top">
         <div className="item">
-          <label htmlFor="city">Location</label>
+          <label htmlFor="city">Địa chỉ</label>
           <input
             type="text"
             id="city"
@@ -44,35 +44,35 @@ function Filter() {
       </div>
       <div className="bottom">
         <div className="item">
-          <label htmlFor="type">Type</label>
+          <label htmlFor="type">Loại</label>
           <select
             name="type"
             id="type"
             onChange={handleChange}
             defaultValue={query.type}
           >
-            <option value="">any</option>
-            <option value="buy">Buy</option>
-            <option value="rent">Rent</option>
+            {/*<option value="">any</option>*/}
+            <option value="buy">Mua</option>
+            <option value="rent">Thuê</option>
           </select>
         </div>
         <div className="item">
-          <label htmlFor="property">Property</label>
+          <label htmlFor="property">Loại nhà</label>
           <select
             name="property"
             id="property"
             onChange={handleChange}
             defaultValue={query.property}
           >
-            <option value="">any</option>
-            <option value="apartment">Apartment</option>
-            <option value="house">House</option>
-            <option value="condo">Condo</option>
-            <option value="land">Land</option>
+            {/*<option value="">any</option>*/}
+            <option value="apartment">Căn hộ</option>
+            <option value="house">Nhà đất</option>
+            {/*<option value="condo">Condo</option>
+            <option value="land">Land</option>*/}
           </select>
         </div>
         <div className="item">
-          <label htmlFor="minPrice">Min Price</label>
+          <label htmlFor="minPrice">Giá thấp nhất</label>
           <input
             type="number"
             id="minPrice"
@@ -83,7 +83,7 @@ function Filter() {
           />
         </div>
         <div className="item">
-          <label htmlFor="maxPrice">Max Price</label>
+          <label htmlFor="maxPrice">Giá cao nhất</label>
           <input
             type="text"
             id="maxPrice"
@@ -94,7 +94,7 @@ function Filter() {
           />
         </div>
         <div className="item">
-          <label htmlFor="bedroom">Bedroom</label>
+          <label htmlFor="bedroom">Phòng ngủ</label>
           <input
             type="text"
             id="bedroom"

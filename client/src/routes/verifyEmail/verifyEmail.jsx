@@ -34,7 +34,7 @@ function VerifyEmail() {
     <div className="registerPage">
       <div className="formContainer">
         {message && <h1 style={{ color: "green" }}>{message}</h1>}
-        {error && <h1 style={{ color: "red" }}>{error}</h1>}
+        {error && <h1 style={{ color: "red" }}></h1>}
       </div>
     </div>
   );

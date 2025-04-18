@@ -11,6 +11,8 @@ import NewPostPage from "./routes/newPostPage/newPostPage";
 import { listPageLoader, profilePageLoader, singlePageLoader } from "./lib/loaders";
 import RequestVerification from "./routes/register/requestVerification";
 import VerifyEmail from "./routes/verifyEmail/verifyEmail";
+import ForgotPassword from "./routes/forgotPassword/forgotPassword";
+import ResetPassword from "./routes/resetPassword/resetPassword";
 
 function App() {
   const router = createBrowserRouter([
@@ -41,6 +43,22 @@ function App() {
           path: "/register",
           element: <Register />,
         },
+        { 
+          path: "/request-verification", 
+          element: <RequestVerification /> 
+        },
+        { 
+          path: "/verify-email", 
+          element: <VerifyEmail /> 
+        },
+        {
+          path: "/forgot-password",
+          element: <ForgotPassword />,
+        },
+        {
+          path: "/reset-password",
+          element: <ResetPassword />,
+        },
       ],
     },
     {
@@ -60,8 +78,7 @@ function App() {
           path: "/add",
           element: <NewPostPage />,
         },
-        { path: "/request-verification", element: <RequestVerification /> },
-        { path: "/verify-email", element: <VerifyEmail /> },
+        
       ],
     },
   ]);
