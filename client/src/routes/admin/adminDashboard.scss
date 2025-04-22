@@ -1,0 +1,60 @@
+.adminDashboard {
+    display: flex;
+    height: 100vh;
+  
+    .sidebar {
+      flex: 1;
+      background-color: #333;
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+  
+      h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+      }
+  
+      ul {
+        list-style: none;
+        padding: 0;
+  
+        li {
+          margin-bottom: 10px;
+  
+          a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+  
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+
+      .logoutButton {
+        margin-top: auto;
+        padding: 10px 20px;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+
+        &:hover {
+          background-color: darkred;
+        }
+      }
+    }
+  
+    .content {
+      flex: 4;
+      padding: 20px;
+      background-color: #f4f4f4;
+      overflow-y: auto;
+    }
+  }

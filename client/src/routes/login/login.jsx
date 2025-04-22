@@ -27,11 +27,16 @@ function Login() {
         password,
       });
 
-      updateUser(res.data)
+      updateUser(res.data);
 
-      navigate("/");
+      // Redirect based on user role
+      if (res.data.isAdmin) {
+        navigate("/admin"); // Redirect to Admin Dashboard
+      } else {
+        navigate("/"); // Redirect to Home Page
+      }
     } catch (err) {
-      setError(err.response.data.message);
+      setError(err.response?.data?.message || "Something went wrong!");
     } finally {
       setIsLoading(false);
     }

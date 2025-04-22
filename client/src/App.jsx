@@ -13,6 +13,11 @@ import RequestVerification from "./routes/register/requestVerification";
 import VerifyEmail from "./routes/verifyEmail/verifyEmail";
 import ForgotPassword from "./routes/forgotPassword/forgotPassword";
 import ResetPassword from "./routes/resetPassword/resetPassword";
+import AdminDashboard from "./routes/admin/adminDasboard";
+import RequireAdmin from "./routes/admin/requireAdmin";
+import ManageUsers from "./routes/manage/manageUsers";
+import ManagePosts from "./routes/manage/managePosts";
+import ViewReports from "./routes/manage/viewReports";
 
 function App() {
   const router = createBrowserRouter([
@@ -79,6 +84,30 @@ function App() {
           element: <NewPostPage />,
         },
         
+      ],
+    },
+    {
+      path: "/admin",
+      element: <RequireAdmin />, // Protect admin routes
+      children: [
+        {
+          path: "/admin",
+          element: <AdminDashboard />,
+          children: [
+            {
+              path: "users",
+              element: <ManageUsers />,
+            },
+            {
+              path: "posts",
+              element: <ManagePosts />,
+            },
+            {
+              path: "reports",
+              element: <ViewReports />,
+            },
+          ],
+        },
       ],
     },
   ]);

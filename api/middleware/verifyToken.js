@@ -8,7 +8,14 @@ export const verifyToken = (req, res, next) => {
   jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
     if (err) return res.status(403).json({ message: "Token is not Valid!" });
     req.userId = payload.id;
-
+    req.isAdmin = payload.isAdmin; // Add isAdmin to the request
     next();
   });
+};
+
+export const verifyAdmin = (req, res, next) => {
+  if (!req.isAdmin) {
+    return res.status(403).json({ message: "Admin access required!" });
+  }
+  next();
 };
