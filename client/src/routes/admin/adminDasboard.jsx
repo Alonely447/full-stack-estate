@@ -1,5 +1,5 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import apiRequest from "../../lib/apiRequest";
 import "./adminDashboard.scss";
@@ -7,6 +7,7 @@ import "./adminDashboard.scss";
 function AdminDashboard() {
   const { updateUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const handleLogout = async () => {
     try {
@@ -18,21 +19,38 @@ function AdminDashboard() {
     }
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
-    <div className="adminDashboard">
+    <div className={`adminDashboard ${sidebarOpen ? "sidebarOpen" : "sidebarClosed"}`}>
       <div className="sidebar">
-        <h2>Admin Panel</h2>
-        <ul>
-          <li>
-            <Link to="/admin/users">Manage Users</Link>
-          </li>
-          <li>
-            <Link to="/admin/posts">Manage Posts</Link>
-          </li>
-          <li>
-            <Link to="/admin/reports">View Reports</Link>
-          </li>
-        </ul>
+        <div className="sidebarHeader">
+          <h2>Admin Panel</h2>
+          <button className="toggleButton" onClick={toggleSidebar}>
+            {sidebarOpen ? "⟨" : "⟩"}
+          </button>
+        </div>
+        <nav>
+          <ul>
+            <li>
+              <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : "")}>
+                Manage Users
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/posts" className={({ isActive }) => (isActive ? "active" : "")}>
+                Manage Posts
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/reports" className={({ isActive }) => (isActive ? "active" : "")}>
+                View Reports
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
         <button className="logoutButton" onClick={handleLogout}>
           Logout
         </button>

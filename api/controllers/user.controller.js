@@ -1,9 +1,18 @@
 import prisma from "../lib/prisma.js";
 import bcrypt from "bcrypt";
+import { sendVerificationEmailAfterAdminApproval } from "./auth.controller.js";
 
 export const getUsers = async (req, res) => {
+  const search = req.query.search || "";
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      where: {
+        OR: [
+          { username: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
+        ],
+      },
+    });
     res.status(200).json(users);
   } catch (err) {
     console.log(err);
@@ -174,5 +183,26 @@ export const getNotificationNumber = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Failed to get profile posts!" });
+  }
+};
+
+// New admin endpoint to verify user and send verification email
+export const verifyUserByAdmin = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Update user to set isAdminVerified to true
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { isAdminVerified: true },
+    });
+
+    // Send verification email after admin approval
+    await sendVerificationEmailAfterAdminApproval(updatedUser.email);
+
+    res.status(200).json({ message: "User verified by admin and verification email sent." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to verify user by admin." });
   }
 };

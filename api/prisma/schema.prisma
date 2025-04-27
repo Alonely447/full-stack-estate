@@ -69,17 +69,19 @@ model SavedPost {
 }
 
 model User {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  email      String      @unique
-  username   String      @unique
-  password   String
-  avatar     String?
-  isAdmin    Boolean     @default(false) // New field for admin role
-  createdAt  DateTime    @default(now())
-  posts      Post[]
-  savedPosts SavedPost[]
-  chats      Chat[]      @relation(fields: [chatIDs], references: [id])
-  chatIDs    String[]    @db.ObjectId
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  email           String      @unique
+  username        String      @unique
+  password        String
+  avatar          String?
+  isAdmin         Boolean     @default(false) // New field for admin role
+  isAdminVerified Boolean     @default(false) // New field for admin verification status
+  isEmailVerified Boolean     @default(false) // New field for email verification status
+  createdAt       DateTime    @default(now())
+  posts           Post[]
+  savedPosts      SavedPost[]
+  chats           Chat[]      @relation(fields: [chatIDs], references: [id])
+  chatIDs         String[]    @db.ObjectId
 }
 
 model Chat {

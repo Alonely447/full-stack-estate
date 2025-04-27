@@ -5,6 +5,8 @@ export const getPosts = async (req, res) => {
   const query = req.query;
 
   try {
+    const search = query.search || undefined;
+
     const posts = await prisma.post.findMany({
       where: {
         city: query.city || undefined,
@@ -15,6 +17,14 @@ export const getPosts = async (req, res) => {
           gte: parseInt(query.minPrice) || undefined,
           lte: parseInt(query.maxPrice) || undefined,
         },
+        AND: search
+          ? {
+              OR: [
+                { title: { contains: search, mode: "insensitive" } },
+                { description: { contains: search, mode: "insensitive" } },
+              ],
+            }
+          : undefined,
       },
     });
 

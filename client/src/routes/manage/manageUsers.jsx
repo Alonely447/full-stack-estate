@@ -1,44 +1,80 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import apiRequest from "../../lib/apiRequest";
+import "./manageUsers.scss";
 
 function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await apiRequest.get("/users");
-        setUsers(res.data);
-      } catch (err) {
-        setError("Failed to fetch users.");
-      }
-    };
-
-    fetchUsers();
+  const fetchUsers = useCallback(async (searchQuery = "") => {
+    try {
+      const res = await apiRequest.get(`/users${searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : ""}`);
+      setUsers(res.data);
+    } catch (err) {
+      setError("Failed to fetch users.");
+    }
   }, []);
 
+  useEffect(() => {
+    fetchUsers(search);
+  }, [fetchUsers, search]);
+
+  const handleApprove = async (userId) => {
+    setLoading(true);
+    try {
+      await apiRequest.put(`/users/verify/${userId}`);
+      // Update user list after approval
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId ? { ...user, isAdminVerified: true } : user
+        )
+      );
+    } catch (err) {
+      setError("Failed to verify user.");
+    }
+    setLoading(false);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+  };
+
   return (
-    <div>
+    <div className="manageUsers">
       <h1>Manage Users</h1>
-      {error && <p>{error}</p>}
+      <input
+        type="text"
+        placeholder="Search users by username or email"
+        value={search}
+        onChange={handleSearchChange}
+        className="searchInput"
+      />
+      {error && <p className="error">{error}</p>}
       <table>
         <thead>
           <tr>
             <th>ID</th>
             <th>Email</th>
             <th>Username</th>
+            <th>Verified by Admin</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.email}</td>
-              <td>{user.username}</td>
-              <td>
-                <button>Delete</button>
+              <td data-label="ID">{user.id}</td>
+              <td data-label="Email">{user.email}</td>
+              <td data-label="Username">{user.username}</td>
+              <td data-label="Verified by Admin">{user.isAdminVerified ? "Yes" : "No"}</td>
+              <td data-label="Actions">
+                {!user.isAdminVerified && (
+                  <button onClick={() => handleApprove(user.id)} disabled={loading}>
+                    {loading ? "Approving..." : "Approve"}
+                  </button>
+                )}
               </td>
             </tr>
           ))}

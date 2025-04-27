@@ -18,53 +18,74 @@ export const requestEmailVerification = async (req, res) => {
       return res.status(400).json({ message: "Email or username is already registered!" });
     }
 
-    // Generate a verification token
-    const token = jwt.sign(
-      { email, username, password },
-      process.env.JWT_SECRET_KEY,
-      { expiresIn: "1d" } // Token expires in 1 day
-    );
-    console.log("Token generated:", token);
-    // Send the verification email
-    await sendVerificationEmail(email, token);
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.status(200).json({ message: "Verification email sent. Please check your inbox.", token });
+    // Create the user with isAdminVerified and isEmailVerified set to false
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+        isAdminVerified: false,
+        isEmailVerified: false,
+      },
+    });
+
+    // Do NOT send verification email yet, wait for admin approval
+    res.status(201).json({ message: "Registration successful. Awaiting admin approval." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to send verification email!" });
+    res.status(500).json({ message: "Failed to register user!" });
   }
 };
 
 export const verifyEmailAndRegister = async (req, res) => {
-  const  token  = req.query.token;
- // console.log("Token from query:", token);
+  const token = req.query.token;
 
   if (!token) {
     return res.status(400).json({ message: "Token is missing!" });
   }
 
   try {
-    
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    const { email, username, password } = decoded;
+    const { email } = decoded;
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create the user
-    const newUser = await prisma.user.create({
-      data: {
-        username,
-        email,
-        password: hashedPassword,
-      },
+    // Set isEmailVerified to true for the user with this email
+    const updatedUser = await prisma.user.updateMany({
+      where: { email },
+      data: { isEmailVerified: true },
     });
 
-    res.status(201).json({ message: "Account created successfully!" });
+    if (updatedUser.count === 0) {
+      return res.status(400).json({ message: "User not found or already verified." });
+    }
+
+    res.status(200).json({ message: "Email verified successfully!" });
   } catch (err) {
     console.error(err);
-    res.status(400).json({ message: ""});
+    res.status(400).json({ message: "Invalid or expired token!" });
+  }
+};
+
+// New function to send verification email after admin approval
+export const sendVerificationEmailAfterAdminApproval = async (email) => {
+  try {
+    // Generate a verification token
+    const token = jwt.sign(
+      { email },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1d" } // Token expires in 1 day
+    );
+
+    console.log("Token generated for admin approved user:", token);
+
+    // Send the verification email
+    await sendVerificationEmail(email, token);
+  } catch (err) {
+    console.error("Failed to send verification email after admin approval:", err);
+    throw err;
   }
 };
 
@@ -78,6 +99,11 @@ export const login = async (req, res) => {
     });
 
     if (!user) return res.status(400).json({ message: "Invalid Credentials!" });
+
+    // Check if user is admin verified
+    if (!user.isAdminVerified) {
+      return res.status(403).json({ message: "User not verified by admin yet." });
+    }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
