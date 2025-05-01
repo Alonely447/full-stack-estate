@@ -186,6 +186,22 @@ export const getNotificationNumber = async (req, res) => {
   }
 };
 
+export const refuseUserByAdmin = async (req, res) => {
+  const userId = req.params.id;
+
+  try {
+    // Delete the user by id
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+
+    res.status(200).json({ message: "User registration refused and data deleted." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to refuse user registration." });
+  }
+};
+
 // New admin endpoint to verify user and send verification email
 export const verifyUserByAdmin = async (req, res) => {
   const userId = req.params.id;

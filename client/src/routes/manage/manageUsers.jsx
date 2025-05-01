@@ -71,9 +71,27 @@ function ManageUsers() {
               <td data-label="Verified by Admin">{user.isAdminVerified ? "Yes" : "No"}</td>
               <td data-label="Actions">
                 {!user.isAdminVerified && (
-                  <button onClick={() => handleApprove(user.id)} disabled={loading}>
-                    {loading ? "Approving..." : "Approve"}
-                  </button>
+                  <>
+                    <button onClick={() => handleApprove(user.id)} disabled={loading}>
+                      {loading ? "Approving..." : "Approve"}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        setLoading(true);
+                        try {
+                          await apiRequest.delete(`/users/refuse/${user.id}`);
+                          setUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
+                        } catch (err) {
+                          setError("Failed to refuse user.");
+                        }
+                        setLoading(false);
+                      }}
+                      disabled={loading}
+                      style={{ marginLeft: "8px", backgroundColor: "#e74c3c", color: "white" }}
+                    >
+                      {loading ? "Refusing..." : "Refuse"}
+                    </button>
+                  </>
                 )}
               </td>
             </tr>

@@ -7,7 +7,8 @@ import {
   savePost,
   profilePosts,
   getNotificationNumber,
-  verifyUserByAdmin
+  verifyUserByAdmin,
+  refuseUserByAdmin
 } from "../controllers/user.controller.js";
 import { verifyToken, verifyAdmin } from "../middleware/verifyToken.js";
 
@@ -20,6 +21,8 @@ router.delete("/:id", verifyToken, deleteUser);
 router.post("/save", verifyToken, savePost);
 router.get("/profilePosts", verifyToken, profilePosts);
 router.get("/notification", verifyToken, getNotificationNumber);
+
+router.delete("/refuse/:id", verifyToken, verifyAdmin, refuseUserByAdmin);
 
 // New route for admin to verify user
 router.put("/verify/:id", verifyToken, verifyAdmin, verifyUserByAdmin);
