@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import apiRequest from "../../lib/apiRequest";
+import "./manage.scss";
 
 function ManagePosts() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
   const fetchPosts = async (searchQuery = "") => {
@@ -28,37 +30,41 @@ function ManagePosts() {
   };
 
   const handleVerify = async (postId) => {
+    setLoading(true);
     try {
       await apiRequest.put(`/posts/${postId}/verify`);
       fetchPosts(search);
     } catch (err) {
       setError("Failed to verify post.");
     }
+    setLoading(false);
   };
 
   const handleDelete = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) {
       return;
     }
+    setLoading(true);
     try {
       await apiRequest.delete(`/posts/${postId}`);
       fetchPosts(search);
     } catch (err) {
       alert("Failed to delete post.");
     }
+    setLoading(false);
   };
 
   return (
-    <div>
+    <div className="manageContainer">
       <h1>Manage Posts</h1>
       <input
         type="text"
         placeholder="Search posts..."
         value={search}
         onChange={handleSearchChange}
-        style={{ marginBottom: "10px", padding: "5px", width: "300px" }}
+        className="searchInput"
       />
-      {error && <p>{error}</p>}
+      {error && <p className="error">{error}</p>}
       <table>
         <thead>
           <tr>
@@ -72,15 +78,19 @@ function ManagePosts() {
         <tbody>
           {posts.map((post) => (
             <tr key={post.id}>
-              <td>{post.id}</td>
-              <td>{post.title}</td>
-              <td>{post.price}</td>
-              <td>{post.verified ? "Yes" : "No"}</td>
-              <td>
+              <td data-label="ID">{post.id}</td>
+              <td data-label="Title">{post.title}</td>
+              <td data-label="Price">{post.price}</td>
+              <td data-label="Verified">{post.verified ? "Yes" : "No"}</td>
+              <td data-label="Actions">
                 {!post.verified && (
-                  <button onClick={() => handleVerify(post.id)}>Verify</button>
+                  <button onClick={() => handleVerify(post.id)} disabled={loading} className="verify">
+                    {loading ? "Verifying..." : "Verify"}
+                  </button>
                 )}
-                <button onClick={() => handleDelete(post.id)}>Delete</button>
+                <button onClick={() => handleDelete(post.id)} disabled={loading} className="delete">
+                  {loading ? "Deleting..." : "Delete"}
+                </button>
               </td>
             </tr>
           ))}

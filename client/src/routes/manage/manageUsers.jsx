@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import apiRequest from "../../lib/apiRequest";
-import "./manageUsers.scss";
+import "./manage.scss";
 
 function ManageUsers() {
   const [users, setUsers] = useState([]);
@@ -42,7 +42,7 @@ function ManageUsers() {
   };
 
   return (
-    <div className="manageUsers">
+    <div className="manageContainer">
       <h1>Manage Users</h1>
       <input
         type="text"
@@ -72,11 +72,14 @@ function ManageUsers() {
               <td data-label="Actions">
                 {!user.isAdminVerified && (
                   <>
-                    <button onClick={() => handleApprove(user.id)} disabled={loading}>
+                    <button onClick={() => handleApprove(user.id)} disabled={loading} className="approve">
                       {loading ? "Approving..." : "Approve"}
                     </button>
                     <button
                       onClick={async () => {
+                        if (!window.confirm("Are you sure you want to refuse this user?")) {
+                          return;
+                        }
                         setLoading(true);
                         try {
                           await apiRequest.delete(`/users/refuse/${user.id}`);
@@ -87,7 +90,7 @@ function ManageUsers() {
                         setLoading(false);
                       }}
                       disabled={loading}
-                      style={{ marginLeft: "8px", backgroundColor: "#e74c3c", color: "white" }}
+                      className="refuse"
                     >
                       {loading ? "Refusing..." : "Refuse"}
                     </button>

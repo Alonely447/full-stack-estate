@@ -18,6 +18,7 @@ import RequireAdmin from "./routes/admin/requireAdmin";
 import ManageUsers from "./routes/manage/manageUsers";
 import ManagePosts from "./routes/manage/managePosts";
 import ViewReports from "./routes/manage/viewReports";
+import AdminStats from "./routes/admin/AdminStats";
 
 function App() {
   const router = createBrowserRouter([
@@ -105,6 +106,10 @@ function App() {
             {
               path: "reports",
               element: <ViewReports />,
+            },
+            {
+              path: "stats",
+              element: <AdminStats />,
             },
           ],
         },

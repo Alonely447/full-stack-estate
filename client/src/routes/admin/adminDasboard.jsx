@@ -49,6 +49,11 @@ function AdminDashboard() {
                 View Reports
               </NavLink>
             </li>
+            <li>
+              <NavLink to="/admin/stats" className={({ isActive }) => (isActive ? "active" : "")}>
+                Statistics
+              </NavLink>
+            </li>
           </ul>
         </nav>
         <button className="logoutButton" onClick={handleLogout}>

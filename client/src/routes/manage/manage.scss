@@ -1,0 +1,173 @@
+/* Shared styles for manage users and posts pages */
+
+.manageContainer {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.error {
+  color: #e74c3c;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1rem;
+  color: #444;
+}
+
+thead {
+  background-color: #007bff;
+  color: white;
+}
+
+th, td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+tbody tr:hover {
+  background-color: #f1f7ff;
+}
+
+button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button.approve {
+  background-color: #28a745;
+  color: white;
+  margin-right: 8px;
+}
+
+button.approve:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+button.refuse {
+  background-color: #dc3545;
+  color: white;
+}
+
+button.refuse:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+button.verify {
+  background-color: #17a2b8;
+  color: white;
+  margin-right: 8px;
+}
+
+button.verify:hover:not(:disabled) {
+  background-color: #138496;
+}
+
+button.delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+button.delete:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead tr {
+    display: none;
+  }
+
+  tbody tr {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  tbody td {
+    padding-left: 50%;
+    position: relative;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  tbody td::before {
+    position: absolute;
+    top: 12px;
+    left: 15px;
+    width: 45%;
+    white-space: nowrap;
+    font-weight: 600;
+    color: #555;
+  }
+
+  tbody td[data-label="ID"]::before {
+    content: "ID";
+  }
+  tbody td[data-label="Email"]::before {
+    content: "Email";
+  }
+  tbody td[data-label="Username"]::before {
+    content: "Username";
+  }
+  tbody td[data-label="Verified by Admin"]::before {
+    content: "Verified";
+  }
+  tbody td[data-label="Actions"]::before {
+    content: "Actions";
+  }
+
+  tbody td[data-label="Title"]::before {
+    content: "Title";
+  }
+  tbody td[data-label="Price"]::before {
+    content: "Price";
+  }
+  tbody td[data-label="Verified"]::before {
+    content: "Verified";
+  }
+}
