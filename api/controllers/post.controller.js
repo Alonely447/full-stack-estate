@@ -3,9 +3,16 @@ import jwt from "jsonwebtoken";
 
 export const getPosts = async (req, res) => {
   const query = req.query;
+  const tokenUserId = req.userId;
 
   try {
     const search = query.search || undefined;
+
+    // Check if user is admin
+    const user = await prisma.user.findUnique({
+      where: { id: tokenUserId },
+    });
+    const isAdmin = user?.isAdmin || false;
 
     const posts = await prisma.post.findMany({
       where: {
@@ -17,6 +24,7 @@ export const getPosts = async (req, res) => {
           gte: parseInt(query.minPrice) || undefined,
           lte: parseInt(query.maxPrice) || undefined,
         },
+        verified: isAdmin ? undefined : true,
         AND: search
           ? {
               OR: [
@@ -28,9 +36,7 @@ export const getPosts = async (req, res) => {
       },
     });
 
-    // setTimeout(() => {
     res.status(200).json(posts);
-    // }, 3000);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Failed to get posts" });
@@ -95,6 +101,7 @@ export const addPost = async (req, res) => {
       data: {
         ...body.postData,
         userId: tokenUserId,
+        verified: false,
         postDetail: {
           create: body.postDetail,
         },
@@ -116,16 +123,32 @@ export const updatePost = async (req, res) => {
   }
 };
 
-export const deletePost = async (req, res) => {
+export const verifyPost = async (req, res) => {
+  const postId = req.params.id;
+
+  try {
+    const updatedPost = await prisma.post.update({
+      where: { id: postId },
+      data: { verified: true },
+    });
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Failed to verify post" });
+  }
+};
+
+/*export const deletePost = async (req, res) => {
   const id = req.params.id;
   const tokenUserId = req.userId;
+  const isAdmin = req.isAdmin;
 
   try {
     const post = await prisma.post.findUnique({
       where: { id },
     });
 
-    if (post.userId !== tokenUserId) {
+    if (!isAdmin && post.userId !== tokenUserId) {
       return res.status(403).json({ message: "Not Authorized!" });
     }
 
@@ -138,4 +161,44 @@ export const deletePost = async (req, res) => {
     console.log(err);
     res.status(500).json({ message: "Failed to delete post" });
   }
+};*/
+export const deletePost = async (req, res) => {
+  const id = req.params.id;
+  const tokenUserId = req.userId;
+  const isAdmin = req.isAdmin;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id },
+    });
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (!isAdmin && post.userId !== tokenUserId) {
+      return res.status(403).json({ message: "Not Authorized!" });
+    }
+
+    // Delete related PostDetail if exists
+    await prisma.postDetail.deleteMany({
+      where: { postId: id },
+    });
+
+    // Delete related SavedPost records
+    await prisma.savedPost.deleteMany({
+      where: { postId: id },
+    });
+
+    // Delete the post
+    await prisma.post.delete({
+      where: { id },
+    });
+
+    res.status(200).json({ message: "Post deleted" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Failed to delete post" });
+  }
 };
+

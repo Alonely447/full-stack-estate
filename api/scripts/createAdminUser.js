@@ -4,7 +4,7 @@ import prisma from "../lib/prisma.js";
 async function createAdmin() {
   const username = "admin";
   const email = "admin@example.com";
-  const password = "Admin@123"; // Change to a secure password
+  const password = "admin"; // Change to a secure password
 
   try {
     const existingAdmin = await prisma.user.findUnique({
