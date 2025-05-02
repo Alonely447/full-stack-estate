@@ -7,6 +7,7 @@ function ManageUsers() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("manage"); // "manage" or "newRegistrations"
 
   const fetchUsers = useCallback(async (searchQuery = "") => {
     try {
@@ -41,9 +42,28 @@ function ManageUsers() {
     setSearch(e.target.value);
   };
 
+  // Filter users based on active tab
+  const filteredUsers = users.filter(user =>
+    activeTab === "manage" ? user.isAdminVerified : !user.isAdminVerified
+  );
+
   return (
     <div className="manageContainer">
       <h1>Manage Users</h1>
+      <div className="tabs">
+        <button
+          className={activeTab === "manage" ? "active" : ""}
+          onClick={() => setActiveTab("manage")}
+        >
+          Manage Users
+        </button>
+        <button
+          className={activeTab === "newRegistrations" ? "active" : ""}
+          onClick={() => setActiveTab("newRegistrations")}
+        >
+          New Registrations
+        </button>
+      </div>
       <input
         type="text"
         placeholder="Search users by username or email"
@@ -63,14 +83,14 @@ function ManageUsers() {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <tr key={user.id}>
               <td data-label="ID">{user.id}</td>
               <td data-label="Email">{user.email}</td>
               <td data-label="Username">{user.username}</td>
               <td data-label="Verified by Admin">{user.isAdminVerified ? "Yes" : "No"}</td>
               <td data-label="Actions">
-                {!user.isAdminVerified && (
+                {!user.isAdminVerified && activeTab === "newRegistrations" && (
                   <>
                     <button onClick={() => handleApprove(user.id)} disabled={loading} className="approve">
                       {loading ? "Approving..." : "Approve"}

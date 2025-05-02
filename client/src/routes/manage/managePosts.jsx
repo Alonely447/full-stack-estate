@@ -7,6 +7,7 @@ function ManagePosts() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("manage"); // "manage" or "new"
 
   const fetchPosts = async (searchQuery = "") => {
     try {
@@ -54,9 +55,28 @@ function ManagePosts() {
     setLoading(false);
   };
 
+  // Filter posts based on active tab
+  const filteredPosts = posts.filter((post) =>
+    activeTab === "manage" ? post.verified : !post.verified
+  );
+
   return (
     <div className="manageContainer">
       <h1>Manage Posts</h1>
+      <div className="tabs">
+        <button
+          className={activeTab === "manage" ? "active" : ""}
+          onClick={() => setActiveTab("manage")}
+        >
+          Manage Posts
+        </button>
+        <button
+          className={activeTab === "new" ? "active" : ""}
+          onClick={() => setActiveTab("new")}
+        >
+          New Posts
+        </button>
+      </div>
       <input
         type="text"
         placeholder="Search posts..."
@@ -76,19 +96,27 @@ function ManagePosts() {
           </tr>
         </thead>
         <tbody>
-          {posts.map((post) => (
+          {filteredPosts.map((post) => (
             <tr key={post.id}>
               <td data-label="ID">{post.id}</td>
               <td data-label="Title">{post.title}</td>
               <td data-label="Price">{post.price}</td>
               <td data-label="Verified">{post.verified ? "Yes" : "No"}</td>
               <td data-label="Actions">
-                {!post.verified && (
-                  <button onClick={() => handleVerify(post.id)} disabled={loading} className="verify">
+                {!post.verified && activeTab === "new" && (
+                  <button
+                    onClick={() => handleVerify(post.id)}
+                    disabled={loading}
+                    className="verify"
+                  >
                     {loading ? "Verifying..." : "Verify"}
                   </button>
                 )}
-                <button onClick={() => handleDelete(post.id)} disabled={loading} className="delete">
+                <button
+                  onClick={() => handleDelete(post.id)}
+                  disabled={loading}
+                  className="delete"
+                >
                   {loading ? "Deleting..." : "Delete"}
                 </button>
               </td>

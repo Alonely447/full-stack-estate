@@ -7,3 +7,28 @@
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+.tabs {
+  margin-bottom: 16px;
+}
+
+.tabs button {
+  background-color: #f1f1f1;
+  border: none;
+  padding: 10px 20px;
+  margin-right: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.3s ease;
+}
+
+.tabs button:hover {
+  background-color: #ddd;
+}
+
+.tabs button.active {
+  background-color: #fff;
+  border-bottom: 2px solid #007bff;
+  font-weight: bold;
+}
