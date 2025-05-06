@@ -1,10 +1,12 @@
-import { useState} from "react";
+
+import { useState, useContext } from "react";
 import "./newPostPage.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import apiRequest from "../../lib/apiRequest";
 import UploadWidget from "../../components/uploadWidget/UploadWidget";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 function NewPostPage() {
   const [value, setValue] = useState("");
@@ -12,14 +14,17 @@ function NewPostPage() {
   const [error, setError] = useState("");
   const [lat, setLat] = useState("");
   const [lon, setLon] = useState("");
-  
-  const navigate = useNavigate()
+  const { currentUser } = useContext(AuthContext);
+
+  const navigate = useNavigate();
 
   const fetchCoordinates = async (address, city) => {
     try {
       const fullAddress = `${address}, ${city}`;
       const geocodeResponse = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          fullAddress
+        )}`
       );
       const geocodeData = await geocodeResponse.json();
       if (geocodeData.length === 0) {
@@ -37,7 +42,7 @@ function NewPostPage() {
   const handleAddressChange = (e) => {
     const form = e.target.form;
     const address = form.address.value;
-    const city = form.city.value; 
+    const city = form.city.value;
     if (address && city) {
       fetchCoordinates(address, city);
     }
@@ -45,13 +50,24 @@ function NewPostPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (
+      currentUser.isSuspended &&
+      currentUser.suspensionExpiresAt &&
+      new Date(currentUser.suspensionExpiresAt) > new Date()
+    ) {
+      setError(
+        `You are suspended until ${new Date(
+          currentUser.suspensionExpiresAt
+        ).toLocaleString()}. You cannot create new posts.`
+      );
+      return;
+    }
+
     const formData = new FormData(e.target);
     const inputs = Object.fromEntries(formData);
 
-    
-
     try {
-      
       const res = await apiRequest.post("/posts", {
         postData: {
           title: inputs.title,
@@ -63,7 +79,7 @@ function NewPostPage() {
           type: inputs.type,
           property: inputs.property,
           latitude: String(lat),
-          longitude: String(lon) ,
+          longitude: String(lon),
           images: images,
         },
         postDetail: {
@@ -77,7 +93,7 @@ function NewPostPage() {
           restaurant: parseInt(inputs.restaurant),
         },
       });
-      navigate("/"+res.data.id)
+      navigate("/" + res.data.id);
     } catch (err) {
       console.log(err);
       setError("Failed to create post. Please try again.");
@@ -100,7 +116,12 @@ function NewPostPage() {
             </div>
             <div className="item">
               <label htmlFor="address">Địa chỉ</label>
-              <input id="address" name="address" type="text" onChange={handleAddressChange}/>
+              <input
+                id="address"
+                name="address"
+                type="text"
+                onChange={handleAddressChange}
+              />
             </div>
             <div className="item description">
               <label htmlFor="desc">Mô tả</label>
@@ -108,7 +129,7 @@ function NewPostPage() {
             </div>
             <div className="item">
               <label htmlFor="city">Thành phố</label>
-              <input id="city" name="city" type="text" onChange={handleAddressChange}/>
+              <input id="city" name="city" type="text" onChange={handleAddressChange} />
             </div>
             <div className="item">
               <label htmlFor="bedroom">Số phòng ngủ</label>
@@ -120,11 +141,11 @@ function NewPostPage() {
             </div>
             <div className="item">
               <label htmlFor="latitude">Vĩ độ</label>
-              <input id="latitude" name="latitude" type="text" value={lat} readOnly/>
+              <input id="latitude" name="latitude" type="text" value={lat} readOnly />
             </div>
             <div className="item">
               <label htmlFor="longitude">Kinh độ</label>
-              <input id="longitude" name="longitude" type="text" value={lon} readOnly/>
+              <input id="longitude" name="longitude" type="text" value={lon} readOnly />
             </div>
             <div className="item">
               <label htmlFor="type">Loại hình</label>
@@ -197,7 +218,7 @@ function NewPostPage() {
         <UploadWidget
           uwConfig={{
             multiple: true,
-            cloudName: "lamadev",
+            cloudName: "datstorage",
             uploadPreset: "estate",
             folder: "posts",
           }}
@@ -207,5 +228,7 @@ function NewPostPage() {
     </div>
   );
 }
-//console.log("Latitude", lat, "Longtitude", lon);
+
 export default NewPostPage;
+//console.log("Latitude", lat, "Longtitude", lon);
+

@@ -32,6 +32,8 @@ model Post {
   userId     String      @db.ObjectId
   postDetail PostDetail?
   savedPosts SavedPost[]
+
+  Report Report[]
 }
 
 enum Type {
@@ -78,11 +80,17 @@ model User {
   isAdmin         Boolean     @default(false) // New field for admin role
   isAdminVerified Boolean     @default(false) // New field for admin verification status
   isEmailVerified Boolean     @default(false) // New field for email verification status
+  isSuspended     Boolean     @default(false) // New field for suspension status
+  suspensionExpiresAt DateTime? // New field for suspension expiration datetime
   createdAt       DateTime    @default(now())
   posts           Post[]
   savedPosts      SavedPost[]
   chats           Chat[]      @relation(fields: [chatIDs], references: [id])
   chatIDs         String[]    @db.ObjectId
+
+  submittedReports Report[] @relation("ReportSubmitter")
+
+  suspectedReports Report[] @relation("ReportSuspect")
 }
 
 model Chat {
@@ -102,4 +110,19 @@ model Message {
   chat      Chat     @relation(fields: [chatId], references: [id])
   chatId    String   @db.ObjectId
   createdAt DateTime @default(now())
+}
+
+model Report {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  reason      String
+  image       String?
+  status      String   @default("pending") // "pending", "rejected", "completed"
+  actionTaken String?  // "post_deleted", "user_suspended", etc.
+  createdAt   DateTime @default(now())
+  post        Post     @relation(fields: [postId], references: [id])
+  postId      String   @db.ObjectId
+  reporter    User     @relation("ReportSubmitter", fields: [reporterId], references: [id])
+  reporterId  String   @db.ObjectId
+  suspect     User     @relation("ReportSuspect", fields: [suspectId], references: [id])
+  suspectId   String   @db.ObjectId
 }

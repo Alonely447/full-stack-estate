@@ -75,3 +75,128 @@ export const getStats = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch statistics!" });
   }
 };
+
+export const rejectReport = async (req, res) => {
+  const { reportId } = req.params;
+
+  try {
+    const updatedReport = await prisma.report.update({
+      where: { id: reportId },
+      data: { status: "rejected" },
+    });
+
+    res.status(200).json({ message: "Report rejected successfully.", updatedReport });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to reject report." });
+  }
+};
+
+export const processReport = async (req, res) => {
+  const { reportId } = req.params;
+  const { action, suspensionDuration } = req.body; // "delete_post", "suspend_user", suspensionDuration: "1_day" or "1_week"
+
+  try {
+    const report = await prisma.report.findUnique({
+      where: { id: reportId },
+      include: { post: true, suspect: true },
+    });
+
+    if (!report) {
+      return res.status(404).json({ message: "Report not found." });
+    }
+
+    if (action === "delete_post") {
+      // Mark the report as completed before deletions
+      await prisma.report.update({
+        where: { id: reportId },
+        data: { status: "completed", actionTaken: action },
+      });
+
+      // Delete related Report records except current report
+      await prisma.report.deleteMany({
+        where: {
+          postId: report.postId,
+          NOT: { id: reportId },
+        },
+      });
+
+      // Delete related PostDetail if exists
+      await prisma.postDetail.deleteMany({
+        where: { postId: report.postId },
+      });
+
+      // Delete related SavedPost records
+      await prisma.savedPost.deleteMany({
+        where: { postId: report.postId },
+      });
+
+      // Delete the post
+      await prisma.post.delete({
+        where: { id: report.postId },
+      });
+    } else if (action === "suspend_user") {
+      // Calculate suspension expiration date
+      let suspensionExpiresAt = null;
+      const now = new Date();
+
+      console.log("Suspension duration:", suspensionDuration);
+
+      if (suspensionDuration === "1_day") {
+        suspensionExpiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      } else if (suspensionDuration === "1_week") {
+        suspensionExpiresAt = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      } else {
+        return res.status(400).json({ message: "Invalid suspension duration." });
+      }
+
+      console.log("Suspension expires at:", suspensionExpiresAt);
+
+      // Suspend the user with expiration
+      await prisma.user.update({
+        where: { id: report.suspectId },
+        data: { isSuspended: true, suspensionExpiresAt },
+      });
+    }
+
+    // Mark the report as completed
+    const updatedReport = await prisma.report.update({
+      where: { id: reportId },
+      data: { status: "completed", actionTaken: action },
+    });
+
+    res.status(200).json({ message: "Report processed successfully.", updatedReport });
+  } catch (err) {
+    console.error("Error in processReport:", err);
+    res.status(500).json({ message: "Failed to process report.", error: err.message, stack: err.stack });
+  }
+};
+
+export const createReport = async (req, res) => {
+  const { postId, description, images, suspectId } = req.body;
+  const reporterId = req.userId;
+
+  if (!suspectId) {
+    return res.status(400).json({ message: "suspectId is required." });
+  }
+
+  try {
+    const newReport = await prisma.report.create({
+      data: {
+        postId,
+        reason: description,
+        image: images.length > 0 ? images[0] : null,
+        reporterId,
+        suspectId,
+        status: "pending",
+      },
+    });
+
+    res.status(201).json({ message: "Report created successfully.", report: newReport });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to create report." });
+  }
+};
+
+

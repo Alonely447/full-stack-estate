@@ -6,6 +6,21 @@ export const addMessage = async (req, res) => {
   const text = req.body.text;
 
   try {
+    // Check if user is suspended and suspension is active
+    const user = await prisma.user.findUnique({
+      where: { id: tokenUserId },
+    });
+
+    if (
+      user.isSuspended &&
+      user.suspensionExpiresAt &&
+      new Date(user.suspensionExpiresAt) > new Date()
+    ) {
+      return res.status(403).json({
+        message: `You are suspended until ${user.suspensionExpiresAt}. You cannot send messages.`,
+      });
+    }
+
     const chat = await prisma.chat.findUnique({
       where: {
         id: chatId,

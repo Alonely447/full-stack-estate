@@ -75,6 +75,21 @@ export const getChat = async (req, res) => {
 export const addChat = async (req, res) => {
   const tokenUserId = req.userId;
   try {
+    // Check if user is suspended and suspension is active
+    const user = await prisma.user.findUnique({
+      where: { id: tokenUserId },
+    });
+
+    if (
+      user.isSuspended &&
+      user.suspensionExpiresAt &&
+      new Date(user.suspensionExpiresAt) > new Date()
+    ) {
+      return res.status(403).json({
+        message: `You are suspended until ${user.suspensionExpiresAt}. You cannot create new chats.`,
+      });
+    }
+
     const newChat = await prisma.chat.create({
       data: {
         userIDs: [tokenUserId, req.body.receiverId],

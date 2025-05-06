@@ -1,0 +1,91 @@
+.reportModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.reportModal {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px 40px;
+  width: 480px;
+  max-width: 90%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  position: relative;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.reportModal .closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 1.8rem;
+  color: #333;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+}
+
+.reportModal .closeButton:hover {
+  color: #ff4d4f;
+}
+
+.reportModal form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.reportModal label {
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+}
+
+.reportModal textarea {
+  margin-top: 8px;
+  padding: 10px;
+  resize: vertical;
+  min-height: 80px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.reportModal textarea:focus {
+  outline: none;
+  border-color: #40a9ff;
+  box-shadow: 0 0 5px rgba(24, 144, 255, 0.5);
+}
+
+.reportModal button[type="submit"] {
+  padding: 12px 0;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #1890ff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reportModal button[type="submit"]:hover:not(:disabled) {
+  background-color: #40a9ff;
+}
+
+.reportModal button[type="submit"]:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}

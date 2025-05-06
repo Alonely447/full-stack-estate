@@ -29,6 +29,15 @@ function Login() {
 
       updateUser(res.data);
 
+      // Show suspension notification if suspended
+      if (
+        res.data.isSuspended &&
+        res.data.suspensionExpiresAt &&
+        new Date(res.data.suspensionExpiresAt) > new Date()
+      ) {
+        alert(`You are suspended until ${new Date(res.data.suspensionExpiresAt).toLocaleString()}. You cannot post or chat.`);
+      }
+
       // Redirect based on user role
       if (res.data.isAdmin) {
         navigate("/admin"); // Redirect to Admin Dashboard

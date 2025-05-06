@@ -6,58 +6,48 @@ import DOMPurify from "dompurify";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import apiRequest from "../../lib/apiRequest";
+import ReportModal from "../../components/reportModal/ReportModal";
 
 function SinglePage() {
   const post = useLoaderData();
   const [saved, setSaved] = useState(post.isSaved);
   const { currentUser } = useContext(AuthContext);
-  console.log("in single page",post);
+  const [showReportModal, setShowReportModal] = useState(false);
+  console.log("in single page", post);
   console.log(post.userId);
   console.log(post.latitude);
   console.log(post.longitude);
   const navigate = useNavigate();
 
- /* const handleSave = async () => {
-    if (!currentUser) {
-      navigate("/login");
-    }
-    // AFTER REACT 19 UPDATE TO USEOPTIMISTIK HOOK
+  const handleSave = async () => {
     setSaved((prev) => !prev);
+    if (!currentUser) {
+      redirect("/login");
+    }
     try {
       await apiRequest.post("/users/save", { postId: post.id });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
       setSaved((prev) => !prev);
     }
-  };*/
+  };
 
-  const handleSave= async ()=>{
-    setSaved((prev)=> !prev);
-    if(!currentUser){
-      redirect("/login")
+  const handelSendMessage = async () => {
+    try {
+      await apiRequest.post("/chats", { receiverId: post.userId });
+      navigate("/profile");
+    } catch (error) {
+      console.log(error);
     }
-      try {
-        await apiRequest.post("/users/save",{postId : post.id})
-      } catch (error) {
-        console.log(error);
-        setSaved((prev)=> !prev)
-      }
-   }
-  
-  
-   const handelSendMessage =async ()=>{
-        try {
-          await apiRequest.post("/chats",{receiverId : post.userId})
-           navigate("/profile")
-        } catch (error) {
-          console.log(error);
-        }
-   }
-  
-  /*const handleShowDirection = ()=>{
-    const url = `https://www.google.com/maps?q=${post.latitude},${post.longitude}`;
-    window.open(url, '_blank');    
-  }*/
+  };
+
+  const handleOpenReportModal = () => {
+    setShowReportModal(true);
+  };
+
+  const handleCloseReportModal = () => {
+    setShowReportModal(false);
+  };
 
   return (
     <div className="singlePage">
@@ -175,7 +165,9 @@ function SinglePage() {
               <img src="/chat.png" alt="" />
               Gửi tin nhắn
             </button>
-            {/*<button onClick={handleShowDirection}> Show Direction</button>*/}
+            <button className="buttons" onClick={handleOpenReportModal}>
+              Report Post
+            </button>
             <button
               onClick={handleSave}
               style={{
@@ -185,9 +177,13 @@ function SinglePage() {
               <img src="/save.png" alt="" />
               {saved ? "Đã lưu" : "Lưu bài viết"}
             </button>
+
           </div>
         </div>
       </div>
+      {showReportModal && (
+        <ReportModal postId={post.id} suspectId={post.userId} onClose={handleCloseReportModal} />
+      )}
     </div>
   );
 }

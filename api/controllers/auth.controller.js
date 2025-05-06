@@ -127,7 +127,11 @@ export const login = async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .status(200)
-      .json(userInfo);
+      .json({
+        ...userInfo,
+        isSuspended: user.isSuspended,
+        suspensionExpiresAt: user.suspensionExpiresAt,
+      });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Failed to login!" });

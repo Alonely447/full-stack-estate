@@ -1,0 +1,22 @@
+@import "./manage.scss";
+
+/* Additional styles specific to viewReports */
+
+button.refuse {
+  background-color: #dc3545;
+  color: white;
+}
+
+button.refuse:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+button.approve {
+  background-color: #28a745;
+  color: white;
+  margin-left: 8px;
+}
+
+button.approve:hover:not(:disabled) {
+  background-color: #218838;
+}

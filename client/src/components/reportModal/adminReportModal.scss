@@ -1,0 +1,107 @@
+.adminReportModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  }
+  
+  .adminReportModal {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px 40px;
+  width: 480px;
+  max-width: 90%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  position: relative;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .adminReportModal .closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 1.8rem;
+  color: #333;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s ease-in-out;
+  }
+  
+  .adminReportModal .closeButton:hover {
+  color: #ff4d4f;
+  }
+  
+  .reportImageContainer {
+  margin-bottom: 20px;
+  text-align: center;
+  }
+  
+  .reportImageContainer img {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 8px;
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  }
+  
+  .actionButtons button {
+  padding: 12px 0;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  }
+  
+  .deletePostButton {
+  background-color: #e74c3c;
+  color: white;
+  }
+  
+  .deletePostButton:hover {
+  background-color: #c0392b;
+  }
+  
+  .suspensionOptions {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+  color: #555;
+  }
+  
+  .suspensionOptions label {
+  cursor: pointer;
+  user-select: none;
+  }
+  
+  .suspendUserButton {
+  background-color: #f39c12;
+  color: white;
+  }
+  
+  .suspendUserButton:hover {
+  background-color: #d68910;
+  }
+  
+  .cancelButton {
+  background-color: #7f8c8d;
+  color: white;
+  }
+  
+  .cancelButton:hover {
+  background-color: #606b6d;
+  }
