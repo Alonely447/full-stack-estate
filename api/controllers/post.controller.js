@@ -14,6 +14,23 @@ export const getPosts = async (req, res) => {
     });
     const isAdmin = user?.isAdmin || false;
 
+    const andConditions = [];
+
+    if (search) {
+      andConditions.push({
+        OR: [
+          { title: { contains: search, mode: "insensitive" } },
+          { postDetail: { desc: { contains: search, mode: "insensitive" } } },
+        ],
+      });
+    }
+
+    andConditions.push({
+      userId: {
+        not: tokenUserId,
+      },
+    });
+
     const posts = await prisma.post.findMany({
       where: {
         city: query.city || undefined,
@@ -25,14 +42,7 @@ export const getPosts = async (req, res) => {
           lte: parseInt(query.maxPrice) || undefined,
         },
         verified: isAdmin ? undefined : true,
-        AND: search
-          ? {
-              OR: [
-                { title: { contains: search, mode: "insensitive" } },
-                { postDetail: { desc: { contains: search, mode: "insensitive" } } },
-              ],
-            }
-          : undefined,
+        AND: andConditions,
       },
       include: {
         postDetail: true,

@@ -74,6 +74,7 @@ export const getChat = async (req, res) => {
 
 export const addChat = async (req, res) => {
   const tokenUserId = req.userId;
+  const receiverId = req.body.receiverId;
   try {
     // Check if user is suspended and suspension is active
     const user = await prisma.user.findUnique({
@@ -90,9 +91,23 @@ export const addChat = async (req, res) => {
       });
     }
 
+    // Check if chat between these two users already exists
+    const existingChat = await prisma.chat.findFirst({
+      where: {
+        AND: [
+          { userIDs: { has: tokenUserId } },
+          { userIDs: { has: receiverId } },
+        ],
+      },
+    });
+
+    if (existingChat) {
+      return res.status(200).json(existingChat);
+    }
+
     const newChat = await prisma.chat.create({
       data: {
-        userIDs: [tokenUserId, req.body.receiverId],
+        userIDs: [tokenUserId, receiverId],
       },
     });
     res.status(200).json(newChat);
