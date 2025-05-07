@@ -29,10 +29,13 @@ export const getPosts = async (req, res) => {
           ? {
               OR: [
                 { title: { contains: search, mode: "insensitive" } },
-                { description: { contains: search, mode: "insensitive" } },
+                { postDetail: { desc: { contains: search, mode: "insensitive" } } },
               ],
             }
           : undefined,
+      },
+      include: {
+        postDetail: true,
       },
     });
 
@@ -54,6 +57,7 @@ export const getPost = async (req, res) => {
           select: {
             username: true,
             avatar: true,
+            email: true
           },
         },
       },
@@ -153,30 +157,7 @@ export const verifyPost = async (req, res) => {
   }
 };
 
-/*export const deletePost = async (req, res) => {
-  const id = req.params.id;
-  const tokenUserId = req.userId;
-  const isAdmin = req.isAdmin;
 
-  try {
-    const post = await prisma.post.findUnique({
-      where: { id },
-    });
-
-    if (!isAdmin && post.userId !== tokenUserId) {
-      return res.status(403).json({ message: "Not Authorized!" });
-    }
-
-    await prisma.post.delete({
-      where: { id },
-    });
-
-    res.status(200).json({ message: "Post deleted" });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "Failed to delete post" });
-  }
-};*/
 export const deletePost = async (req, res) => {
   const id = req.params.id;
   const tokenUserId = req.userId;

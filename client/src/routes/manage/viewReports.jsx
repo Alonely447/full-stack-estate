@@ -58,18 +58,18 @@ function ViewReports() {
   const handleDeletePost = async () => {
     try {
       await apiRequest.patch(`/reports/${selectedReport.id}/process`, {
-        action: "delete_post",
+        action: "hide_post",
       });
       setReports((prev) =>
         prev.map((r) =>
           r.id === selectedReport.id
-            ? { ...r, status: "completed", actionTaken: "delete_post" }
+            ? { ...r, status: "completed", actionTaken: "hide_post" }
             : r
         )
       );
       setSelectedReport(null);
     } catch (err) {
-      alert("Failed to delete post.");
+      alert("Failed to hide post.");
     }
   };
 

@@ -7,7 +7,7 @@ function ManageUsers() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("manage"); // "manage" or "newRegistrations"
+  const [activeTab, setActiveTab] = useState("manage");
 
   const fetchUsers = useCallback(async (searchQuery = "") => {
     try {
@@ -55,7 +55,7 @@ function ManageUsers() {
           className={activeTab === "manage" ? "active" : ""}
           onClick={() => setActiveTab("manage")}
         >
-          Manage Users
+          Users
         </button>
         <button
           className={activeTab === "newRegistrations" ? "active" : ""}
@@ -78,8 +78,12 @@ function ManageUsers() {
             <th>ID</th>
             <th>Email</th>
             <th>Username</th>
-            <th>Verified by Admin</th>
-            <th>Actions</th>
+            {activeTab === "newRegistrations" && (
+              <>
+                <th>Verified by Admin</th>
+                <th>Actions</th>
+              </>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -88,35 +92,39 @@ function ManageUsers() {
               <td data-label="ID">{user.id}</td>
               <td data-label="Email">{user.email}</td>
               <td data-label="Username">{user.username}</td>
-              <td data-label="Verified by Admin">{user.isAdminVerified ? "Yes" : "No"}</td>
-              <td data-label="Actions">
-                {!user.isAdminVerified && activeTab === "newRegistrations" && (
-                  <>
-                    <button onClick={() => handleApprove(user.id)} disabled={loading} className="approve">
-                      {loading ? "Approving..." : "Approve"}
-                    </button>
-                    <button
-                      onClick={async () => {
-                        if (!window.confirm("Are you sure you want to refuse this user?")) {
-                          return;
-                        }
-                        setLoading(true);
-                        try {
-                          await apiRequest.delete(`/users/refuse/${user.id}`);
-                          setUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
-                        } catch (err) {
-                          setError("Failed to refuse user.");
-                        }
-                        setLoading(false);
-                      }}
-                      disabled={loading}
-                      className="refuse"
-                    >
-                      {loading ? "Refusing..." : "Refuse"}
-                    </button>
-                  </>
-                )}
-              </td>
+              {activeTab === "newRegistrations" && (
+                <>
+                  <td data-label="Verified by Admin">{user.isAdminVerified ? "Yes" : "No"}</td>
+                  <td data-label="Actions">
+                    {!user.isAdminVerified && activeTab === "newRegistrations" && (
+                      <>
+                        <button onClick={() => handleApprove(user.id)} disabled={loading} className="approve">
+                          {loading ? "Approving..." : "Approve"}
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (!window.confirm("Are you sure you want to refuse this user?")) {
+                              return;
+                            }
+                            setLoading(true);
+                            try {
+                              await apiRequest.delete(`/users/refuse/${user.id}`);
+                              setUsers((prevUsers) => prevUsers.filter((u) => u.id !== user.id));
+                            } catch (err) {
+                              setError("Failed to refuse user.");
+                            }
+                            setLoading(false);
+                          }}
+                          disabled={loading}
+                          className="refuse"
+                        >
+                          {loading ? "Refusing..." : "Refuse"}
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </>
+              )}
             </tr>
           ))}
         </tbody>

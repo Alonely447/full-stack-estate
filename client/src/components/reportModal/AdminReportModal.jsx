@@ -19,6 +19,11 @@ function AdminReportModal({ report, onClose, onDeletePost, onSuspendUser, onCanc
           &times;
         </button>
         <h2>Process Report</h2>
+        <p><strong>Post ID:</strong> {report.postId ? (
+          <a href={`/${report.postId}`} target="_blank" rel="noopener noreferrer" style={{color: "#007bff", cursor: "pointer", textDecoration: "underline"}}>
+            {report.postId}
+          </a>
+        ) : "N/A"}</p>
         <p><strong>Reason:</strong> {report.reason}</p>
         {report.image && (
           <div className="reportImageContainer">
@@ -26,7 +31,7 @@ function AdminReportModal({ report, onClose, onDeletePost, onSuspendUser, onCanc
           </div>
         )}
         <div className="actionButtons">
-          <button className="deletePostButton" onClick={onDeletePost}>Delete Post</button>
+          {/*<button className="deletePostButton" onClick={onDeletePost}>Delete Post</button>*/}
           <div className="suspensionOptions">
             <label>
               <input

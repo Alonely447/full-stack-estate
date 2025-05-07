@@ -3,9 +3,16 @@ import prisma from "../lib/prisma.js";
 export const getReports = async (req, res) => {
   try {
     const reports = await prisma.report.findMany({
-      include: {
+      select: {
+        id: true,
+        reason: true,
+        image: true,
+        status: true,
+        actionTaken: true,
+        createdAt: true,
         reporter: { select: { username: true } },
         suspect: { select: { username: true } },
+        postId: true,
       },
     });
     res.status(200).json(reports);
@@ -94,7 +101,7 @@ export const rejectReport = async (req, res) => {
 
 export const processReport = async (req, res) => {
   const { reportId } = req.params;
-  const { action, suspensionDuration } = req.body; // "delete_post", "suspend_user", suspensionDuration: "1_day" or "1_week"
+  const { action, suspensionDuration } = req.body; // "hide_post", "suspend_user", suspensionDuration: "1_day" or "1_week"
 
   try {
     const report = await prisma.report.findUnique({
@@ -106,34 +113,30 @@ export const processReport = async (req, res) => {
       return res.status(404).json({ message: "Report not found." });
     }
 
-    if (action === "delete_post") {
-      // Mark the report as completed before deletions
+    if (action === "hide_post") {
+      // Use transaction to delete related reports except current report, savedPosts, and update post to hide it
+      await prisma.$transaction([
+        // Delete related Report records except current report
+        prisma.report.deleteMany({
+          where: {
+            postId: report.postId,
+            NOT: { id: reportId },
+          },
+        }),
+        // Delete related SavedPost records
+        prisma.savedPost.deleteMany({
+          where: { postId: report.postId },
+        }),
+        // Update the post to set verified to false (hide the post)
+        prisma.post.update({
+          where: { id: report.postId },
+          data: { verified: false },
+        }),
+      ]);
+      // Mark the current report as completed
       await prisma.report.update({
         where: { id: reportId },
         data: { status: "completed", actionTaken: action },
-      });
-
-      // Delete related Report records except current report
-      await prisma.report.deleteMany({
-        where: {
-          postId: report.postId,
-          NOT: { id: reportId },
-        },
-      });
-
-      // Delete related PostDetail if exists
-      await prisma.postDetail.deleteMany({
-        where: { postId: report.postId },
-      });
-
-      // Delete related SavedPost records
-      await prisma.savedPost.deleteMany({
-        where: { postId: report.postId },
-      });
-
-      // Delete the post
-      await prisma.post.delete({
-        where: { id: report.postId },
       });
     } else if (action === "suspend_user") {
       // Calculate suspension expiration date

@@ -3,20 +3,24 @@ import Slider from "../../components/slider/Slider";
 import Map from "../../components/map/Map";
 import { useNavigate, useLoaderData } from "react-router-dom";
 import DOMPurify from "dompurify";
-import { useContext, useState } from "react";
+import { useContext, useState, useRef } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import apiRequest from "../../lib/apiRequest";
 import ReportModal from "../../components/reportModal/ReportModal";
+import UserProfileHover from "../../components/userProfileHover/UserProfileHover";
+import Chat from "../../components/chat/Chat";
 
 function SinglePage() {
   const post = useLoaderData();
   const [saved, setSaved] = useState(post.isSaved);
   const { currentUser } = useContext(AuthContext);
   const [showReportModal, setShowReportModal] = useState(false);
-  console.log("in single page", post);
-  console.log(post.userId);
-  console.log(post.latitude);
-  console.log(post.longitude);
+  const [showChatPopup, setShowChatPopup] = useState(false);
+  const [chatId, setChatId] = useState(null);
+  const [chatReceiver, setChatReceiver] = useState(null);
+  const chatButtonRef = useRef(null);
+  const [chatPosition, setChatPosition] = useState({ top: 0, left: 0 });
+
   const navigate = useNavigate();
 
   const handleSave = async () => {
@@ -34,8 +38,14 @@ function SinglePage() {
 
   const handelSendMessage = async () => {
     try {
-      await apiRequest.post("/chats", { receiverId: post.userId });
-      navigate("/profile");
+      const res = await apiRequest.post("/chats", { receiverId: post.userId });
+      setChatId(res.data.id);
+      setChatReceiver({ id: post.userId, username: post.user.username, avatar: post.user.avatar });
+      setShowChatPopup(true);
+      if (chatButtonRef.current) {
+        const rect = chatButtonRef.current.getBoundingClientRect();
+        setChatPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -47,6 +57,12 @@ function SinglePage() {
 
   const handleCloseReportModal = () => {
     setShowReportModal(false);
+  };
+
+  const handleCloseChatPopup = () => {
+    setShowChatPopup(false);
+    setChatId(null);
+    setChatReceiver(null);
   };
 
   return (
@@ -65,8 +81,10 @@ function SinglePage() {
                 <div className="price">{post.price} đ </div>
               </div>
               <div className="user">
-                <img src={post.user.avatar} alt="" />
-                <span>{post.user.username}</span>
+                <UserProfileHover user={post.user}>
+                  <img src={post.user.avatar} alt="" />
+                  <span>{post.user.username}</span>
+                </UserProfileHover>
               </div>
             </div>
             <div
@@ -161,7 +179,7 @@ function SinglePage() {
             <Map items={[post]} />
           </div>
           <div className="buttons">
-            <button onClick={handelSendMessage}>
+            <button ref={chatButtonRef} onClick={handelSendMessage}>
               <img src="/chat.png" alt="" />
               Gửi tin nhắn
             </button>
@@ -177,12 +195,29 @@ function SinglePage() {
               <img src="/save.png" alt="" />
               {saved ? "Đã lưu" : "Lưu bài viết"}
             </button>
-
           </div>
         </div>
       </div>
       {showReportModal && (
         <ReportModal postId={post.id} suspectId={post.userId} onClose={handleCloseReportModal} />
+      )}
+      {showChatPopup && (
+        <div
+          className="chatPopup"
+          style={{
+            position: "absolute",
+            top: chatPosition.top,
+            left: chatPosition.left,
+            zIndex: 1000,
+            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            width: "350px",
+            height: "500px",
+          }}
+        >
+          <Chat chatId={chatId} receiver={chatReceiver} onClose={handleCloseChatPopup} />
+        </div>
       )}
     </div>
   );

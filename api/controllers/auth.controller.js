@@ -69,7 +69,7 @@ export const verifyEmailAndRegister = async (req, res) => {
   }
 };
 
-// New function to send verification email after admin approval
+
 export const sendVerificationEmailAfterAdminApproval = async (email) => {
   try {
     // Generate a verification token
@@ -160,7 +160,7 @@ export const forgotPassword = async (req, res) => {
       expiresIn: "1h", // Token expires in 1 hour
     });
 
-    // Send the reset email
+   
     await sendResetPasswordEmail(email, token);
 
     res.status(200).json({ message: "Password reset link sent to your email." });
@@ -177,7 +177,7 @@ export const resetPassword = async (req, res) => {
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-    // Hash the new password
+    
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update the user's password in the database

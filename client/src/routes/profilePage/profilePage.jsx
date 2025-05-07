@@ -2,16 +2,41 @@ import Chat from "../../components/chat/Chat";
 import List from "../../components/list/List";
 import "./profilePage.scss";
 import apiRequest from "../../lib/apiRequest";
-import { Await, Link, useLoaderData, useNavigate } from "react-router-dom";
-import { Suspense, useContext } from "react";
+import { Await, Link, useLoaderData, useNavigate, useLocation } from "react-router-dom";
+import { Suspense, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+
+export async function loader() {
+  // Fetch posts and chats data for profile page
+  const [postResponse, chatResponse] = await Promise.all([
+    apiRequest.get("/users/profilePosts"),
+    apiRequest.get("/chats"),
+  ]);
+  return { postResponse, chatResponse };
+}
 
 function ProfilePage() {
   const data = useLoaderData();
+  const location = useLocation();
 
   const { updateUser, currentUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
+
+  const [showChatPopup, setShowChatPopup] = useState(false);
+  const [chatId, setChatId] = useState(null);
+  const [chatReceiver, setChatReceiver] = useState(null);
+
+  // Check if navigation state has chat info to open popup
+  useEffect(() => {
+    if (location.state && location.state.chatId && location.state.chatReceiver) {
+      setChatId(location.state.chatId);
+      setChatReceiver(location.state.chatReceiver);
+      setShowChatPopup(true);
+      // Clear state after use to prevent reopening on back/forward
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const handleLogout = async () => {
     try {
@@ -22,6 +47,13 @@ function ProfilePage() {
       console.log(err);
     }
   };
+
+  const handleCloseChatPopup = () => {
+    setShowChatPopup(false);
+    setChatId(null);
+    setChatReceiver(null);
+  };
+
   return (
     <div className="profilePage">
       <div className="details">
@@ -79,11 +111,29 @@ function ProfilePage() {
               resolve={data.chatResponse}
               errorElement={<p>Error loading chats!</p>}
             >
-              {(chatResponse) => <Chat chats={chatResponse.data}/>}
+              {(chatResponse) => <Chat chats={chatResponse.data} />}
             </Await>
           </Suspense>
         </div>
       </div>
+      {showChatPopup && (
+        <div
+          className="chatPopup"
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            right: "20px",
+            zIndex: 1000,
+            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
+            backgroundColor: "white",
+            borderRadius: "8px",
+            width: "350px",
+            height: "500px",
+          }}
+        >
+          <Chat chatId={chatId} receiver={chatReceiver} onClose={handleCloseChatPopup} />
+        </div>
+      )}
     </div>
   );
 }

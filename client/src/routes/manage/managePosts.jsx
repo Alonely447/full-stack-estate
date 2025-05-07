@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import apiRequest from "../../lib/apiRequest";
 import "./manage.scss";
 
@@ -98,7 +99,9 @@ function ManagePosts() {
         <tbody>
           {filteredPosts.map((post) => (
             <tr key={post.id}>
-              <td data-label="ID">{post.id}</td>
+              <td data-label="ID">
+                <Link to={`/${post.id}`}>{post.id}</Link>
+              </td>
               <td data-label="Title">{post.title}</td>
               <td data-label="Price">{post.price}</td>
               <td data-label="Verified">{post.verified ? "Yes" : "No"}</td>
