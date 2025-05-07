@@ -24,6 +24,10 @@ function SinglePage() {
   const navigate = useNavigate();
 
   const handleSave = async () => {
+    if (currentUser && currentUser.id === post.userId) {
+      // Disable save for own post
+      return;
+    }
     setSaved((prev) => !prev);
     if (!currentUser) {
       redirect("/login");
@@ -37,6 +41,10 @@ function SinglePage() {
   };
 
   const handelSendMessage = async () => {
+    if (currentUser && currentUser.id === post.userId) {
+      // Disable message for own post
+      return;
+    }
     try {
       const res = await apiRequest.post("/chats", { receiverId: post.userId });
       setChatId(res.data.id);
@@ -179,18 +187,31 @@ function SinglePage() {
             <Map items={[post]} />
           </div>
           <div className="buttons">
-            <button ref={chatButtonRef} onClick={handelSendMessage}>
+            <button
+              ref={chatButtonRef}
+              onClick={handelSendMessage}
+              disabled={currentUser && currentUser.id === post.userId}
+              title={currentUser && currentUser.id === post.userId ? "Cannot message yourself" : ""}
+            >
               <img src="/chat.png" alt="" />
               Gửi tin nhắn
             </button>
-            <button className="buttons" onClick={handleOpenReportModal}>
+            <button
+              className="buttons"
+              onClick={handleOpenReportModal}
+              disabled={currentUser && currentUser.id === post.userId}
+              title={currentUser && currentUser.id === post.userId ? "Cannot report your own post" : ""}
+            >
               Report Post
             </button>
             <button
               onClick={handleSave}
+              disabled={currentUser && currentUser.id === post.userId}
               style={{
                 backgroundColor: saved ? "#fece51" : "white",
+                cursor: currentUser && currentUser.id === post.userId ? "not-allowed" : "pointer",
               }}
+              title={currentUser && currentUser.id === post.userId ? "Cannot save your own post" : ""}
             >
               <img src="/save.png" alt="" />
               {saved ? "Đã lưu" : "Lưu bài viết"}

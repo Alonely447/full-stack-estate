@@ -88,7 +88,7 @@ function ProfilePage() {
               resolve={data.postResponse}
               errorElement={<p>Error loading posts!</p>}
             >
-              {(postResponse) => <List posts={postResponse.data.userPosts} />}
+              {(postResponse) => <List posts={postResponse.data.userPosts} currentUser={currentUser} />}
             </Await>
           </Suspense>
           <div className="title">
@@ -99,7 +99,7 @@ function ProfilePage() {
               resolve={data.postResponse}
               errorElement={<p>Error loading posts!</p>}
             >
-              {(postResponse) => <List posts={postResponse.data.savedPosts} />}
+              {(postResponse) => <List posts={postResponse.data.savedPosts} currentUser={currentUser} />}
             </Await>
           </Suspense>
         </div>

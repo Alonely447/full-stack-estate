@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import "./card.scss";
 
-function Card({ item }) {
+function Card({ item, currentUser }) {
+  const isOwner = currentUser && item.userId === currentUser.id;
+
   return (
     <div className="card">
       <Link to={`/${item.id}`} className="imageContainer">
@@ -28,12 +30,33 @@ function Card({ item }) {
             </div>
           </div>
           <div className="icons">
-            <div className="icon">
-              <img src="/save.png" alt="" />
-            </div>
-            <div className="icon">
-              <img src="/chat.png" alt="" />
-            </div>
+            {!isOwner && (
+              <>
+                <button className="icon" aria-label="Save post">
+                  <img src="/save.png" alt="Save" />
+                </button>
+                <button className="icon" aria-label="Send message">
+                  <img src="/chat.png" alt="Chat" />
+                </button>
+              </>
+            )}
+            {isOwner && (
+              <>
+                <button
+                  className="icon"
+                  aria-label="Edit post"
+                  title="Edit your post"
+                  onClick={() => {
+                    window.location.href = `/edit-post/${item.id}`;
+                  }}
+                >
+                  <img src="/edit.png" alt="Edit" />
+                </button>
+                <button className="icon" aria-label="Hide post" title="Hide your post">
+                  <img src="/hide.png" alt="Hide" />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ import Login from "./routes/login/login";
 import Register from "./routes/register/register";
 import ProfileUpdatePage from "./routes/profileUpdatePage/profileUpdatePage";
 import NewPostPage from "./routes/newPostPage/newPostPage";
+import EditPostPage from "./routes/editPostPage/EditPostPage";
 import { listPageLoader, profilePageLoader, singlePageLoader } from "./lib/loaders";
 import RequestVerification from "./routes/register/requestVerification";
 import VerifyEmail from "./routes/verifyEmail/verifyEmail";
@@ -84,7 +85,10 @@ function App() {
           path: "/add",
           element: <NewPostPage />,
         },
-        
+        {
+          path: "/edit-post/:id",
+          element: <EditPostPage />,
+        },
       ],
     },
     {
