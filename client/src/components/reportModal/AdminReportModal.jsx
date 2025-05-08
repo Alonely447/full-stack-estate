@@ -31,7 +31,7 @@ function AdminReportModal({ report, onClose, onDeletePost, onSuspendUser, onCanc
           </div>
         )}
         <div className="actionButtons">
-          {/*<button className="deletePostButton" onClick={onDeletePost}>Delete Post</button>*/}
+          <button className="hidePostButton" onClick={onDeletePost}>Hide Post</button>
           <div className="suspensionOptions">
             <label>
               <input

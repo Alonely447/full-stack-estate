@@ -130,7 +130,7 @@ export const processReport = async (req, res) => {
         // Update the post to set verified to false (hide the post)
         prisma.post.update({
           where: { id: report.postId },
-          data: { verified: false },
+          data: { verified: false, status: "flagged" },
         }),
       ]);
       // Mark the current report as completed

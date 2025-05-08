@@ -8,7 +8,7 @@ function ManagePosts() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("manage"); // "manage" or "new"
+  const [activeTab, setActiveTab] = useState("manage"); // "manage", "new", or "flagged"
 
   const fetchPosts = async (searchQuery = "") => {
     try {
@@ -57,9 +57,16 @@ function ManagePosts() {
   };
 
   // Filter posts based on active tab
-  const filteredPosts = posts.filter((post) =>
-    activeTab === "manage" ? post.verified : !post.verified
-  );
+  const filteredPosts = posts.filter((post) => {
+    if (activeTab === "manage") {
+      return post.status !== "flagged" && post.verified;
+    } else if (activeTab === "new") {
+      return post.status !== "flagged" && !post.verified;
+    } else if (activeTab === "flagged") {
+      return post.status === "flagged";
+    }
+    return true;
+  });
 
   return (
     <div className="manageContainer">
@@ -77,6 +84,12 @@ function ManagePosts() {
         >
           New Posts
         </button>
+        <button
+          className={activeTab === "flagged" ? "active" : ""}
+          onClick={() => setActiveTab("flagged")}
+        >
+          Flagged Posts
+        </button>
       </div>
       <input
         type="text"
@@ -92,7 +105,7 @@ function ManagePosts() {
             <th>ID</th>
             <th>Title</th>
             <th>Price</th>
-            <th>Verified</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -104,7 +117,7 @@ function ManagePosts() {
               </td>
               <td data-label="Title">{post.title}</td>
               <td data-label="Price">{post.price}</td>
-              <td data-label="Verified">{post.verified ? "Yes" : "No"}</td>
+              <td data-label="Status">{post.status}</td>
               <td data-label="Actions">
                 {!post.verified && activeTab === "new" && (
                   <button

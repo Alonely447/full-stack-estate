@@ -8,11 +8,14 @@ export const getPosts = async (req, res) => {
   try {
     const search = query.search || undefined;
 
-    // Check if user is admin
-    const user = await prisma.user.findUnique({
-      where: { id: tokenUserId },
-    });
-    const isAdmin = user?.isAdmin || false;
+    let isAdmin = false;
+    if (tokenUserId) {
+      // Check if user is admin
+      const user = await prisma.user.findUnique({
+        where: { id: tokenUserId },
+      });
+      isAdmin = user?.isAdmin || false;
+    }
 
     const andConditions = [];
 
@@ -25,11 +28,13 @@ export const getPosts = async (req, res) => {
       });
     }
 
-    andConditions.push({
-      userId: {
-        not: tokenUserId,
-      },
-    });
+    if (tokenUserId) {
+      andConditions.push({
+        userId: {
+          not: tokenUserId,
+        },
+      });
+    }
 
     const posts = await prisma.post.findMany({
       where: {
@@ -42,7 +47,8 @@ export const getPosts = async (req, res) => {
           lte: parseInt(query.maxPrice) || undefined,
         },
         verified: isAdmin ? undefined : true,
-        AND: andConditions,
+        status: isAdmin ? undefined : { not: "hidden" },
+        AND: andConditions.length > 0 ? andConditions : undefined,
       },
       include: {
         postDetail: true,
@@ -238,6 +244,42 @@ export const deletePost = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Failed to delete post" });
+  }
+};
+
+export const hidePost = async (req, res) => {
+  const postId = req.params.id;
+  const tokenUserId = req.userId;
+
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+    });
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (post.userId !== tokenUserId) {
+      return res.status(403).json({ message: "Not authorized to hide this post" });
+    }
+
+
+
+    // Toggle status between "hidden" and "normal"
+    const newStatus = post.status === "hidden" ? "normal" : "hidden";
+
+    const updatedPost = await prisma.post.update({
+      where: { id: postId },
+      data: {
+        status: newStatus,
+      },
+    });
+
+    res.status(200).json({ message: `Post status updated to ${newStatus}`, post: updatedPost });
+  } catch (err) {
+    console.error("Hide post error:", err);
+    res.status(500).json({ message: "Failed to update post status", error: err.message });
   }
 };
 
