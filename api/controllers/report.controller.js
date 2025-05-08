@@ -101,7 +101,7 @@ export const rejectReport = async (req, res) => {
 
 export const processReport = async (req, res) => {
   const { reportId } = req.params;
-  const { action, suspensionDuration } = req.body; // "hide_post", "suspend_user", suspensionDuration: "1_day" or "1_week"
+  const { hidePost, suspendUser, suspensionDuration } = req.body; // booleans for hidePost and suspendUser, suspensionDuration: "1_day" or "1_week"
 
   try {
     const report = await prisma.report.findUnique({
@@ -113,7 +113,11 @@ export const processReport = async (req, res) => {
       return res.status(404).json({ message: "Report not found." });
     }
 
-    if (action === "hide_post") {
+    if (!hidePost && !suspendUser) {
+      return res.status(400).json({ message: "No action specified." });
+    }
+
+    if (hidePost) {
       // Use transaction to delete related reports except current report, savedPosts, and update post to hide it
       await prisma.$transaction([
         // Delete related Report records except current report
@@ -133,17 +137,12 @@ export const processReport = async (req, res) => {
           data: { verified: false, status: "flagged" },
         }),
       ]);
-      // Mark the current report as completed
-      await prisma.report.update({
-        where: { id: reportId },
-        data: { status: "completed", actionTaken: action },
-      });
-    } else if (action === "suspend_user") {
+    }
+
+    if (suspendUser) {
       // Calculate suspension expiration date
       let suspensionExpiresAt = null;
       const now = new Date();
-
-      console.log("Suspension duration:", suspensionDuration);
 
       if (suspensionDuration === "1_day") {
         suspensionExpiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
@@ -152,8 +151,6 @@ export const processReport = async (req, res) => {
       } else {
         return res.status(400).json({ message: "Invalid suspension duration." });
       }
-
-      console.log("Suspension expires at:", suspensionExpiresAt);
 
       // Suspend the user with expiration
       await prisma.user.update({
@@ -165,7 +162,7 @@ export const processReport = async (req, res) => {
     // Mark the report as completed
     const updatedReport = await prisma.report.update({
       where: { id: reportId },
-      data: { status: "completed", actionTaken: action },
+      data: { status: "completed", actionTaken: JSON.stringify({ hidePost, suspendUser }) },
     });
 
     res.status(200).json({ message: "Report processed successfully.", updatedReport });

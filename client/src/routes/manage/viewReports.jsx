@@ -55,40 +55,23 @@ function ViewReports() {
     setSelectedReport(report);
   };
 
-  const handleDeletePost = async () => {
+  const handleProcessSubmit = async ({ hidePost, suspendUser, suspensionDuration }) => {
     try {
       await apiRequest.patch(`/reports/${selectedReport.id}/process`, {
-        action: "hide_post",
+        hidePost,
+        suspendUser,
+        suspensionDuration,
       });
       setReports((prev) =>
         prev.map((r) =>
           r.id === selectedReport.id
-            ? { ...r, status: "completed", actionTaken: "hide_post" }
+            ? { ...r, status: "completed", actionTaken: JSON.stringify({ hidePost, suspendUser }) }
             : r
         )
       );
       setSelectedReport(null);
     } catch (err) {
-      alert("Failed to hide post.");
-    }
-  };
-
-  const handleSuspendUser = async (duration) => {
-    try {
-      await apiRequest.patch(`/reports/${selectedReport.id}/process`, {
-        action: "suspend_user",
-        suspensionDuration: duration,
-      });
-      setReports((prev) =>
-        prev.map((r) =>
-          r.id === selectedReport.id
-            ? { ...r, status: "completed", actionTaken: "suspend_user" }
-            : r
-        )
-      );
-      setSelectedReport(null);
-    } catch (err) {
-      alert("Failed to suspend user.");
+      alert("Failed to process report.");
     }
   };
 
@@ -147,8 +130,7 @@ function ViewReports() {
         <AdminReportModal
           report={selectedReport}
           onClose={handleCancel}
-          onDeletePost={handleDeletePost}
-          onSuspendUser={handleSuspendUser}
+          onProcess={handleProcessSubmit}
           onCancel={handleCancel}
         />
       )}
