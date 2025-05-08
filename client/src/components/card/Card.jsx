@@ -1,8 +1,33 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "./card.scss";
 
 function Card({ item, currentUser }) {
+  if (item.status === "flagged") {
+    return null; // Hide the post card if flagged
+  }
+
   const isOwner = currentUser && item.userId === currentUser.id;
+  const [postStatus, setPostStatus] = useState(item.status);
+  const navigate = useNavigate();
+
+  const toggleHidePost = async () => {
+    try {
+      const response = await fetch(`/api/posts/${item.id}/hide`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to toggle post status.");
+      }
+      const data = await response.json();
+      setPostStatus(data.post.status);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <div className="card">
@@ -47,12 +72,22 @@ function Card({ item, currentUser }) {
                   aria-label="Edit post"
                   title="Edit your post"
                   onClick={() => {
-                    window.location.href = `/edit-post/${item.id}`;
+                    if (item.status !== "flagged") {
+                      navigate(`/edit-post/${item.id}`);
+                    }
                   }}
+                  disabled={item.status === "flagged"}
                 >
                   <img src="/edit.png" alt="Edit" />
                 </button>
-                <button className="icon" aria-label="Hide post" title="Hide your post">
+                <button
+                  className="icon"
+                  aria-label="Hide post"
+                  title="Hide your post"
+                  onClick={toggleHidePost}
+                  style={{ filter: postStatus === "hidden" ? "invert(27%) sepia(91%) saturate(7491%) hue-rotate(355deg) brightness(91%) contrast(101%)" : "none" }}
+                  disabled={item.status === "flagged"}
+                >
                   <img src="/hide.png" alt="Hide" />
                 </button>
               </>
