@@ -57,12 +57,12 @@ function Card({ item, currentUser }) {
           <div className="icons">
             {!isOwner && (
               <>
-                <button className="icon" aria-label="Save post">
+                {/*<button className="icon" aria-label="Save post">
                   <img src="/save.png" alt="Save" />
                 </button>
                 <button className="icon" aria-label="Send message">
                   <img src="/chat.png" alt="Chat" />
-                </button>
+                </button>*/}
               </>
             )}
             {isOwner && (

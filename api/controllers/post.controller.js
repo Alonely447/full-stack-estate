@@ -62,6 +62,43 @@ export const getPosts = async (req, res) => {
   }
 };
 
+// New controller to get the post with the most saves
+export const getHotPost = async (req, res) => {
+  try {
+    // Aggregate savedPost counts grouped by postId
+    const savedCounts = await prisma.savedPost.groupBy({
+      by: ['postId'],
+      _count: {
+        postId: true,
+      },
+      orderBy: {
+        _count: {
+          postId: 'desc',
+        },
+      },
+      take: 1,
+    });
+
+    if (savedCounts.length === 0) {
+      return res.status(200).json(null);
+    }
+
+    const hotPostId = savedCounts[0].postId;
+
+    const hotPost = await prisma.post.findUnique({
+      where: { id: hotPostId },
+      include: {
+        postDetail: true,
+      },
+    });
+
+    res.status(200).json(hotPost);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to get hot post" });
+  }
+};
+
 export const getPost = async (req, res) => {
   const id = req.params.id;
   try {
