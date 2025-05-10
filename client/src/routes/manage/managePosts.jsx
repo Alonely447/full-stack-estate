@@ -70,25 +70,25 @@ function ManagePosts() {
 
   return (
     <div className="manageContainer">
-      <h1>Manage Posts</h1>
+      <h1>Quản lý bài viết </h1>
       <div className="tabs">
         <button
           className={activeTab === "manage" ? "active" : ""}
           onClick={() => setActiveTab("manage")}
         >
-          Manage Posts
+          Quản lý bài viết
         </button>
         <button
           className={activeTab === "new" ? "active" : ""}
           onClick={() => setActiveTab("new")}
         >
-          New Posts
+          Duyệt bài
         </button>
         <button
           className={activeTab === "flagged" ? "active" : ""}
           onClick={() => setActiveTab("flagged")}
         >
-          Flagged Posts
+          Bài vi phạm 
         </button>
       </div>
       <input
@@ -103,10 +103,10 @@ function ManagePosts() {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Tên bài</th>
+            <th>Giá</th>
+            <th>Tình trạng</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -124,6 +124,7 @@ function ManagePosts() {
                     onClick={() => handleVerify(post.id)}
                     disabled={loading}
                     className="verify"
+                    name="Duyệt"
                   >
                     {loading ? "Verifying..." : "Verify"}
                   </button>
@@ -132,6 +133,7 @@ function ManagePosts() {
                   onClick={() => handleDelete(post.id)}
                   disabled={loading}
                   className="delete"
+                  name="Xóa"
                 >
                   {loading ? "Deleting..." : "Delete"}
                 </button>

@@ -16,7 +16,7 @@ datasource db {
 model Post {
   id         String      @id @default(auto()) @map("_id") @db.ObjectId
   title      String
-  price      Int
+  price      String
   images     String[]
   address    String
   city       String
@@ -52,7 +52,7 @@ model PostDetail {
   desc       String
   utilities  String?
   pet        String?
-  income     String?
+  phoneNumber     String?
   size       Int?
   school     Int?
   bus        Int?

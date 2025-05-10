@@ -71,7 +71,7 @@ function NewPostPage() {
       const res = await apiRequest.post("/posts", {
         postData: {
           title: inputs.title,
-          price: parseInt(inputs.price),
+          price: String(inputs.price),
           address: inputs.address,
           city: inputs.city,
           bedroom: parseInt(inputs.bedroom),
@@ -86,7 +86,7 @@ function NewPostPage() {
           desc: value,
           utilities: inputs.utilities,
           pet: inputs.pet,
-          income: inputs.income,
+          phoneNumber: inputs.phoneNumber,
           size: parseInt(inputs.size),
           school: parseInt(inputs.school),
           bus: parseInt(inputs.bus),
@@ -182,12 +182,12 @@ function NewPostPage() {
               </select>
             </div>
             <div className="item">
-              <label htmlFor="income">Lợi ích</label>
+              <label htmlFor="phoneNumber">Số điện thoại</label>
               <input
-                id="income"
-                name="income"
+                id="phoneNumber"
+                name="phoneNumber"
                 type="text"
-                placeholder="Income Policy"
+                placeholder="Phone Number"
               />
             </div>
             <div className="item">
@@ -206,7 +206,7 @@ function NewPostPage() {
               <label htmlFor="restaurant">Khoảng cách nhà hàng</label>
               <input min={0} id="restaurant" name="restaurant" type="number" />
             </div>
-            <button className="sendButton">Add</button>
+            <button className="sendButton">Đăng </button>
             {error && <span>{error}</span>}
           </form>
         </div>

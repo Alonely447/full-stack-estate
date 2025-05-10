@@ -27,7 +27,7 @@ function AdminDashboard() {
     <div className={`adminDashboard ${sidebarOpen ? "sidebarOpen" : "sidebarClosed"}`}>
       <div className="sidebar">
         <div className="sidebarHeader">
-          <h2>Admin Panel</h2>
+          <h2>Quản lý</h2>
           <button className="toggleButton" onClick={toggleSidebar}>
             {sidebarOpen ? "⟨" : "⟩"}
           </button>
@@ -36,28 +36,28 @@ function AdminDashboard() {
           <ul>
             <li>
               <NavLink to="/admin/users" className={({ isActive }) => (isActive ? "active" : "")}>
-                Manage Users
+                Quản lý người dùng
               </NavLink>
             </li>
             <li>
               <NavLink to="/admin/posts" className={({ isActive }) => (isActive ? "active" : "")}>
-                Manage Posts
+                Quản lý bài viết
               </NavLink>
             </li>
             <li>
               <NavLink to="/admin/reports" className={({ isActive }) => (isActive ? "active" : "")}>
-                View Reports
+                Quản lý tố cáo
               </NavLink>
             </li>
             <li>
               <NavLink to="/admin/stats" className={({ isActive }) => (isActive ? "active" : "")}>
-                Statistics
+                Thống kê
               </NavLink>
             </li>
           </ul>
         </nav>
         <button className="logoutButton" onClick={handleLogout}>
-          Logout
+          Đăng xuất
         </button>
       </div>
       <div className="content">

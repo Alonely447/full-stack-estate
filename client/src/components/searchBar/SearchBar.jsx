@@ -29,7 +29,7 @@ function SearchBar() {
             onClick={() => switchType(type)}
             className={query.type === type ? "active" : ""}
           >
-            {type}
+            {type === "buy" ? "mua" : type === "rent" ? "thuê" : type}
           </button>
         ))}
       </div>

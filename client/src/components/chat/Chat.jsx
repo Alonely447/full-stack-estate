@@ -120,15 +120,7 @@ function Chat({ chats, chatId, receiver, onClose }) {
           <div className="center">
             {chat.messages.map((message) => (
               <div
-                className="chatMessage"
-                style={{
-                  alignSelf:
-                    message.userId === currentUser.id
-                      ? "flex-end"
-                      : "flex-start",
-                  textAlign:
-                    message.userId === currentUser.id ? "right" : "left",
-                }}
+                className={`chatMessage ${message.userId === currentUser.id ? "own" : ""}`}
                 key={message.id}
               >
                 <p>{message.text}</p>

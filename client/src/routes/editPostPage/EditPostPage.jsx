@@ -46,7 +46,7 @@ function EditPostPage() {
           form.property.value = post.property || "apartment";
           form.utilities.value = post.postDetail?.utilities || "owner";
           form.pet.value = post.postDetail?.pet || "allowed";
-          form.income.value = post.postDetail?.income || "";
+          form.phoneNumber.value = post.postDetail?.phoneNumber || "";
           form.size.value = post.postDetail?.size || "";
           form.school.value = post.postDetail?.school || "";
           form.bus.value = post.postDetail?.bus || "";
@@ -129,7 +129,7 @@ function EditPostPage() {
           desc: value,
           utilities: inputs.utilities,
           pet: inputs.pet,
-          income: inputs.income,
+          phoneNumber: inputs.phoneNumber,
           size: parseInt(inputs.size),
           school: parseInt(inputs.school),
           bus: parseInt(inputs.bus),
@@ -227,12 +227,12 @@ function EditPostPage() {
               </select>
             </div>
             <div className="item">
-              <label htmlFor="income">Lợi ích</label>
+              <label htmlFor="phoneNumber">Số điện thoại</label>
               <input
-                id="income"
-                name="income"
+                id="phoneNumber"
+                name="phoneNumber"
                 type="text"
-                placeholder="Income Policy"
+                placeholder="Phone Number"
               />
             </div>
             <div className="item">

@@ -3,6 +3,7 @@
 .singlePage {
   display: flex;
   height: 100%;
+  position: relative;
 
   @include md {
     flex-direction: column;
@@ -191,6 +192,16 @@
         height: 200px;
       }
 
+      .chatPopup {
+        position: absolute;
+        z-index: 10000;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        background-color: white;
+        border-radius: 8px;
+        width: 350px;
+        height: 500px;
+      }
+
       .buttons {
         display: flex;
         justify-content: space-between;
@@ -228,3 +239,4 @@
     }
   }
 }
+

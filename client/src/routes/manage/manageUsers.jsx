@@ -49,19 +49,19 @@ function ManageUsers() {
 
   return (
     <div className="manageContainer">
-      <h1>Manage Users</h1>
+      <h1>Quản lý người dùng</h1>
       <div className="tabs">
         <button
           className={activeTab === "manage" ? "active" : ""}
           onClick={() => setActiveTab("manage")}
         >
-          Users
+          Người dùng 
         </button>
         <button
           className={activeTab === "newRegistrations" ? "active" : ""}
           onClick={() => setActiveTab("newRegistrations")}
         >
-          New Registrations
+          Xác thực đăng ký mới
         </button>
       </div>
       <input
@@ -80,8 +80,8 @@ function ManageUsers() {
             <th>Username</th>
             {activeTab === "newRegistrations" && (
               <>
-                <th>Verified by Admin</th>
-                <th>Actions</th>
+                <th>Trạng thái đã xác thực</th>
+                <th>hành động</th>
               </>
             )}
           </tr>

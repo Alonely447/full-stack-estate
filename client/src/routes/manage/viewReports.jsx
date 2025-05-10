@@ -81,7 +81,7 @@ function ViewReports() {
 
   return (
     <div className="manageContainer">
-      <h1>View Reports</h1>
+      <h1>Tố cáo</h1>
       <input
         type="text"
         placeholder="Search reports..."
@@ -94,11 +94,11 @@ function ViewReports() {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Reporter</th>
-            <th>Suspect</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Người tố cáo</th>
+            <th>Người bị tố cáo</th>
+            <th>Lý do</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -113,10 +113,10 @@ function ViewReports() {
                 {report.status === "pending" && (
                   <>
                     <button className="refuse" onClick={() => handleReject(report.id)}>
-                      Reject
+                      Từ chối 
                     </button>
                     <button className="approve" onClick={() => handleProcess(report)}>
-                      Process
+                      Xử lý
                     </button>
                   </>
                 )}

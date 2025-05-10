@@ -9,6 +9,7 @@ import apiRequest from "../../lib/apiRequest";
 import ReportModal from "../../components/reportModal/ReportModal";
 import UserProfileHover from "../../components/userProfileHover/UserProfileHover";
 import Chat from "../../components/chat/Chat";
+import ReactDOM from "react-dom";
 
 function SinglePage() {
   const post = useLoaderData();
@@ -19,6 +20,7 @@ function SinglePage() {
   const [chatId, setChatId] = useState(null);
   const [chatReceiver, setChatReceiver] = useState(null);
   const chatButtonRef = useRef(null);
+  const singlePageRef = useRef(null);
   const [chatPosition, setChatPosition] = useState({ top: 0, left: 0 });
 
   const navigate = useNavigate();
@@ -30,7 +32,7 @@ function SinglePage() {
     }
     setSaved((prev) => !prev);
     if (!currentUser) {
-      redirect("/login");
+      navigate("/login");
     }
     try {
       await apiRequest.post("/users/save", { postId: post.id });
@@ -41,6 +43,10 @@ function SinglePage() {
   };
 
   const handelSendMessage = async () => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
     if (currentUser && currentUser.id === post.userId) {
       // Disable message for own post
       return;
@@ -50,16 +56,25 @@ function SinglePage() {
       setChatId(res.data.id);
       setChatReceiver({ id: post.userId, username: post.user.username, avatar: post.user.avatar });
       setShowChatPopup(true);
-      if (chatButtonRef.current) {
-        const rect = chatButtonRef.current.getBoundingClientRect();
-        setChatPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
-      }
+      const mapContainer = document.querySelector(".mapContainer");
+    if (mapContainer && singlePageRef.current) {
+      const mapRect = mapContainer.getBoundingClientRect();
+      const containerRect = singlePageRef.current.getBoundingClientRect();
+      setChatPosition({
+        top: mapRect.top - containerRect.top,
+        left: mapRect.left - containerRect.left,
+      });
+    }
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleOpenReportModal = () => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
     setShowReportModal(true);
   };
 
@@ -73,8 +88,23 @@ function SinglePage() {
     setChatReceiver(null);
   };
 
+  // Helper function to mask last 4 characters of phone number
+  const maskPhoneNumber = (phoneNumber) => {
+    if (!phoneNumber || phoneNumber.length <= 4) return phoneNumber;
+    const visiblePart = phoneNumber.slice(0, phoneNumber.length - 4);
+    return visiblePart + "****";
+  };
+
+  // State to track if phone number is unmasked for non-logged-in users
+  const [unmasked, setUnmasked] = useState(false);
+
+  const handleUnhideClick = () => {
+    // Navigate to login page
+    navigate("/login");
+  };
+
   return (
-    <div className="singlePage">
+    <div className="singlePage" ref={singlePageRef}>
       <div className="details">
         <div className="wrapper">
           <Slider images={post.images} />
@@ -84,9 +114,11 @@ function SinglePage() {
                 <h1>{post.title}</h1>
                 <div className="address">
                   <img src="/pin.png" alt="" />
-                  <span>{post.address}</span>
+                  <span>{post.address},{post.city}</span>
                 </div>
-                <div className="price">{post.price} đ </div>
+                <div className="price">
+                  {post.price} đ{post.type === "rent" ? " / tháng" : ""}
+                </div>
               </div>
               <div className="user">
                 <UserProfileHover user={post.user}>
@@ -131,10 +163,32 @@ function SinglePage() {
               </div>
             </div>
             <div className="feature">
-              <img src="/fee.png" alt="" />
+              <img src="/phone.png" alt="" />
               <div className="featureText">
-                <span>Lợi ích</span>
-                <p>{post.postDetail.income}</p>
+                <span>Liên hệ</span>
+                <p>
+                  {currentUser
+                    ? post.postDetail.phoneNumber
+                    : unmasked
+                    ? post.postDetail.phoneNumber
+                    : maskPhoneNumber(post.postDetail.phoneNumber)}{" "}
+                  {!currentUser && !unmasked && (
+                    <button
+                      className="unhideButton"
+                      onClick={handleUnhideClick}
+                      style={{
+                        color: "white",
+                        backgroundColor: "#0a7cfd",
+                        border: "none",
+                        padding: "4px 8px",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Hiện
+                    </button>
+                  )}
+                </p>
               </div>
             </div>
           </div>
@@ -168,7 +222,7 @@ function SinglePage() {
               </div>
             </div>
             <div className="feature">
-              <img src="/pet.png" alt="" />
+              <img src="/bus.png" alt="" />
               <div className="featureText">
                 <span>Trạm xe bus</span>
                 <p>{post.postDetail.bus}m away</p>
@@ -222,24 +276,22 @@ function SinglePage() {
       {showReportModal && (
         <ReportModal postId={post.id} suspectId={post.userId} onClose={handleCloseReportModal} />
       )}
-      {showChatPopup && (
-        <div
-          className="chatPopup"
-          style={{
-            position: "absolute",
-            top: chatPosition.top,
-            left: chatPosition.left,
-            zIndex: 1000,
-            boxShadow: "0 4px 8px rgba(0,0,0,0.2)",
-            backgroundColor: "white",
-            borderRadius: "8px",
-            width: "350px",
-            height: "500px",
-          }}
-        >
-          <Chat chatId={chatId} receiver={chatReceiver} onClose={handleCloseChatPopup} />
-        </div>
-      )}
+      {showChatPopup &&
+        ReactDOM.createPortal(
+          <div
+            className="chatPopup"
+            style={{
+              position: "absolute",
+              top: chatPosition.top,
+              left: chatPosition.left,
+              zIndex: 10000,
+            }}
+          >
+            <Chat chatId={chatId} receiver={chatReceiver} onClose={handleCloseChatPopup} />
+          </div>,
+          document.body
+        )
+      }
     </div>
   );
 }

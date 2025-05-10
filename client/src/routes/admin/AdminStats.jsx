@@ -65,9 +65,9 @@ function AdminStats() {
           <YAxis allowDecimals={false} />
           <Tooltip />
           <Legend />
-          <Bar dataKey="Posts" fill="#8884d8" />
-          <Bar dataKey="Users" fill="#82ca9d" />
-          <Bar dataKey="Messages" fill="#ffc658" />
+          <Bar dataKey="Posts" fill="#8884d8" name="Bài viết"/>
+          <Bar dataKey="Users" fill="#15c700" name="Người dùng"/>
+          <Bar dataKey="Messages" fill="#fd870a" name="Tin nhắn"/>
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -75,15 +75,15 @@ function AdminStats() {
 
   return (
     <div className="adminStats">
-      <h2>Statistics</h2>
+      <h2>Thống kê</h2>
       <div className="totals">
-        <p>Total Posts: {stats.posts.total}</p>
-        <p>Total Users: {stats.users.total}</p>
-        <p>Total Messages: {stats.messages.total}</p>
+        <p>Tổng số bài viết: {stats.posts.total}</p>
+        <p>Tổng số người dùng: {stats.users.total}</p>
+        <p>Tổng số tin nhắn được gửi: {stats.messages.total}</p>
       </div>
-      {renderBarChart(dataWeek, "Past Week")}
-      {renderBarChart(dataMonth, "Past Month")}
-      {renderBarChart(dataYear, "Past Year")}
+      {renderBarChart(dataWeek, "Thống kê tuần")}
+      {renderBarChart(dataMonth, "Thống kê tháng")}
+      {renderBarChart(dataYear, "Thống kê năm")}
     </div>
   );
 }

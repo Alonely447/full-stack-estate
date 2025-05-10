@@ -40,9 +40,11 @@ function Card({ item, currentUser }) {
         </h2>
         <p className="address">
           <img src="/pin.png" alt="" />
-          <span>{item.address}</span>
+          <span>{item.address}, {item.city}</span>
         </p>
-        <p className="price">  {item.price} đ </p>
+        <p className="price">
+          {item.price} đ{item.type === "rent" ? " / tháng" : ""}
+        </p>
         <div className="bottom">
           <div className="features">
             <div className="feature">
@@ -67,28 +69,30 @@ function Card({ item, currentUser }) {
             )}
             {isOwner && (
               <>
-                <button
-                  className="icon"
-                  aria-label="Edit post"
-                  title="Edit your post"
-                  onClick={() => {
-                    if (item.status !== "flagged") {
-                      navigate(`/edit-post/${item.id}`);
-                    }
-                  }}
-                  disabled={item.status === "flagged"}
+              <button
+                className="icon"
+                aria-label="Edit post"
+                title="Chỉnh sửa bài viết của bạn"
+                onClick={() => {
+                if (item.status !== "flagged") {
+                navigate(`/edit-post/${item.id}`);
+                }
+                }}
+                disabled={item.status === "flagged"}
+                style={{ transform: "scale(1.3)" }}
                 >
-                  <img src="/edit.png" alt="Edit" />
+                <img src="/edit.png" alt="Edit" />
                 </button>
+
                 <button
-                  className="icon"
-                  aria-label="Hide post"
-                  title="Hide your post"
-                  onClick={toggleHidePost}
-                  style={{ filter: postStatus === "hidden" ? "invert(27%) sepia(91%) saturate(7491%) hue-rotate(355deg) brightness(91%) contrast(101%)" : "none" }}
-                  disabled={item.status === "flagged"}
+                className="icon"
+                aria-label="Hide post"
+                title="Ẩn bài viết của bạn"
+                onClick={toggleHidePost}
+                style={{ filter: postStatus === "hidden" ? "brightness(60%)" : "none", transform: "scale(1.3)" }}
+                disabled={item.status === "flagged"}
                 >
-                  <img src="/hide.png" alt="Hide" />
+                <img src="/hide.png" alt="Hide" />
                 </button>
               </>
             )}
